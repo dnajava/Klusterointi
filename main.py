@@ -1,23 +1,17 @@
 # Cluster network program
-
 import kit
 from kit import kit
 from datetime import date
 import mclusters
 import nclusters
 
-# *****************************************************************************************************************
-#       MAIN
-# *****************************************************************************************************************
 if __name__ == '__main__':
-    print('Hello, this looks to work, but it is not ready yet.')
-
     kits = []                                           # This is list of kits. First empty.
     kits_to_list = kit.read_kits()                      # Read information of kits from kits.csv.
 
     for k in kits_to_list:
-        uusi_kit = kit(k[0],k[1])                       # Create kit which have information and clustered matches.
-        kits.append(uusi_kit)                           # Add to list.
+        new_kit = kit(k[0], k[1], k[2])                 # Create kit which have information and clustered matches.
+        kits.append(new_kit)                            # Add to list.
 
     netclusters = nclusters.nclusters()
     for k in kits:                                      # Add every kits every GD clusters to netclusters
@@ -30,13 +24,14 @@ if __name__ == '__main__':
         if todelete == None:
             break
         netclusters.remove(todelete)
+        # FIXME: Test this, that it works
 
     while True:                                         # Do while nodes which should be splitted
         node =  netclusters.to_be_splitted()
         if node == None:
             break
         netclusters.split(node)
-
-    exit(0)
+        # FIXME: Test this, that it works
 
     # Now network of GD clusters is ready to display!
+    # TODO: Write nodes.csv and links.csv for Gephi
