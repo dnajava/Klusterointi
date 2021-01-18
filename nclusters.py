@@ -1,5 +1,4 @@
 # Network clusters. Tools to add nodes, find duplicate clusters, delete duplicate clusters, split cluster.
-# Copyright Ilpo Kantonen 2021.
 
 class nclusters:
     def __init__(self, id_p, gd_p):
