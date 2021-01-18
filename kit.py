@@ -1,33 +1,34 @@
 # Kit contains kit id and name of tested person and match list date
+# Maybe some day the parameters are in csv-file
 
 from csv import reader
 from datetime import date
 import mclusters
 
 class kit:
+    dl_directory = '/home/ilpo/Lataukset/'
     kfname = 'kits.csv'
     file = ''
     mclu = None
 
     def __init__(self, id_p, name_p, day_p):
-        dl_directory = '/home/user/Downloads/'
         self.id = id_p
         self.name = name_p
         self.date = day_p
-        self.file = dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
+        self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
         self.mclu = mclusters.mclusters(self.name, self.file)
         self.mclu.read_clusters(self.file)                                                        # Read kit's mt-dna matches
 
     def mk_mclu(self, name_p, file_p):
-        dl_directory = '/home/user/Downloads/'
-        today = date.today().strftime("%Y%m%d")                                                    # Today in FTDNA's matchlist format
+        # today = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
         mclu = mclusters.mclusters(self.name, self.file)
-        self.file = dl_directory + self.id + '_mtDNA_Matches_' + today + '.csv'
+        self.file = self.dl_directory + self.id + '_mtDNA_Matches_' + self.date + '.csv'
         self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_clusters(self.file)                                                         # Read kit's mt-dna matches
+        self.mclu.read_clusters(self.file)  # Read kit's mt-dna matches
 
-    def __init__(self,id_p,name_p):
-        dl_directory = '/home/user/Downloads/'
+    def __init__(self,id_p,name_p, day_p):
+        # self.date = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
+        self.date = day_p
         self.id = id_p
         self.name = name_p
         self.mk_mclu(self.name, self.file)
