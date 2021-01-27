@@ -55,10 +55,10 @@ class nclusters:
         found = False
         ind = 0
         for clu in nclusters:
-            for clu2 in nclusters[clu[0]+1]                 # Compare first iterable with next to end of list
-            if cluster_p == clu and ind > clu[0]:           # First cluster is not a duplicate
-                found = True
-                this.nclusters.pop(ind)
+            for clu2 in nclusters[clu[0]+1]:                # Compare first iterable with next to end of list
+               if (cluster_p == clu and ind > clu[0]):      # First cluster is not a duplicate
+                    found = True
+                    this.nclusters.pop(ind)
 
         if found:
             return found
@@ -93,12 +93,35 @@ class nclusters:
 
     def write_gephi_sources(self):
         # Write nodes.csv and links.csv
+        # Next generation would have nodes in file and get them from there
+
+        i=0
         nodesfile = open("nodes.csv", "w")
-        for c in this.nclusters:
-            nodesfile.write(c.nimi)
+        nodesfile.write('Id, Label, timeset\n')
+        for c in self.nclusters:
+            stri = str(i)
+            print('stri=',stri)
+            stri += ',M' + str(i) + ','                                  # Write  node id  1,M1 2,M2 ...
+            print('2. stri=',stri)
+            nodesfile.write(stri + '\n')
+            i += 1
         nodesfile.close()
 
         linksfile = open("links.csv", "w")
-        for c in this.nclusters:
-            linksfile.write(c.nimi)
+        linksfile.write('Source, Target, Type, Id, Label, timeset, Weight\n')
+
+        j = 0
+        for c in self.nclusters:
+            for match in c:
+                if match[6] == '':
+                    str2 = str(j)
+                    str2 += ',Unkwnown MDKA,' + '\n'
+                    linksfile.write(str2)
+                    j += 1
+                else:
+                    str2 = str(j)
+                    str3 = match[6].replace(',', '')                          # Take commas away from MDKA's
+                    str2 += ',MDKA ' + str3 + '\n'
+                    linksfile.write(str2)
+                    j += 1
         linksfile.close()
