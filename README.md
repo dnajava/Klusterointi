@@ -8,4 +8,3 @@ TODO:
 
 - Remove duplicate match clusters in network
 - Split the cluster, if it contains matches which have other matches than common matches in that cluster
-- Write Gephi import files nodes.csv and links.csv
