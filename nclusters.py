@@ -91,9 +91,14 @@ class nclusters:
         print("Coming soon!")
         return
 
-    def __len__(self):
-        return len(self.nclusters)
-        # TODO: Testaa __len__
+    def write_gephi_sources(self):
+        # Write nodes.csv and links.csv
+        nodesfile = open("nodes.csv", "w")
+        for c in this.nclusters:
+            nodesfile.write(c.nimi)
+        nodesfile.close()
 
-#    def add_match_to_network(self, match):
-
+        linksfile = open("links.csv", "w")
+        for c in this.nclusters:
+            linksfile.write(c.nimi)
+        linksfile.close()
