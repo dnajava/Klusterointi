@@ -20,9 +20,6 @@ if __name__ == '__main__':
             if(k.mclu.gd[i] != None):
                 netclusters.add(k.mclu.get_cluster(i))
 
-    # netclusters.show_all_mdkas()
-    # netclusters.show_cluster_mdkas(1)                   # Print cluster 1 mdkas or unknown
-
 #    while True:                                         # Do while duplicate clusters
 #        todelete = netclusters.clusteramount()
 #        if todelete == None:
