@@ -95,20 +95,36 @@ class nclusters:
         # Write nodes.csv and links.csv
         # Next generation would have nodes in file and get them from there
 
-        i=0
+        i = 0
         nodesfile = open("nodes.csv", "w")
         nodesfile.write('Id, Label, timeset\n')
+        linksfile = open("links.csv", "w")
+        linksfile.write('Source, Target, Type, Id, Label, timeset, Weight\n')
+
         for c in self.nclusters:
             stri = str(i)
             print('stri=',stri)
-            stri += ',M' + str(i) + ','                                  # Write  node id  1,M1 2,M2 ...
+            stri += ', M' + str(i) + ','                                  # Write  node id  1,M1 2,M2 ...
             print('2. stri=',stri)
             nodesfile.write(stri + '\n')
             i += 1
+
+#            j = 0
+            for match in c:
+                if match[6] == '':
+                    str2 = str(i)
+                    str2 += ', Unkwnown MDKA,' + '\n'
+                    nodesfile.write(str2)
+                    i += 1
+                else:
+                    str2 = str(i)
+                    str3 = match[6].replace(',', '')                          # Take commas away from MDKA's
+                    str2 += ', ' + str3 + ',\n'
+                    nodesfile.write(str2)
+                    i += 1
+
         nodesfile.close()
 
-        linksfile = open("links.csv", "w")
-        linksfile.write('Source, Target, Type, Id, Label, timeset, Weight\n')
 
         j = 0
         for c in self.nclusters:
@@ -116,12 +132,12 @@ class nclusters:
                 if match[6] == '':
                     str2 = str(j)
                     str2 += ',Unkwnown MDKA,' + '\n'
-                    linksfile.write(str2)
+                    linksfile.write('linkki')
                     j += 1
                 else:
                     str2 = str(j)
                     str3 = match[6].replace(',', '')                          # Take commas away from MDKA's
                     str2 += ',MDKA ' + str3 + '\n'
-                    linksfile.write(str2)
+                    linksfile.write('linkki')
                     j += 1
         linksfile.close()
