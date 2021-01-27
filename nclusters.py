@@ -108,36 +108,23 @@ class nclusters:
             print('2. stri=',stri)
             nodesfile.write(stri + '\n')
             i += 1
+            cur_node = i
 
-#            j = 0
             for match in c:
                 if match[6] == '':
                     str2 = str(i)
                     str2 += ', Unkwnown MDKA,' + '\n'
                     nodesfile.write(str2)
                     i += 1
+                    str4 = str(i) + ',' + str(cur_node) + ',\n'
+                    linksfile.write(str4)
                 else:
                     str2 = str(i)
-                    str3 = match[6].replace(',', '')                          # Take commas away from MDKA's
-                    str2 += ', ' + str3 + ',\n'
+                    str2 += ', ' + match[6].replace(',', '') + ',\n'          # Take commas away from MDKA's
                     nodesfile.write(str2)
                     i += 1
+                    str4 = str(i) + ',' + str(cur_node) + ',\n'
+                    linksfile.write(str4)
 
         nodesfile.close()
-
-
-        j = 0
-        for c in self.nclusters:
-            for match in c:
-                if match[6] == '':
-                    str2 = str(j)
-                    str2 += ',Unkwnown MDKA,' + '\n'
-                    linksfile.write('linkki')
-                    j += 1
-                else:
-                    str2 = str(j)
-                    str3 = match[6].replace(',', '')                          # Take commas away from MDKA's
-                    str2 += ',MDKA ' + str3 + '\n'
-                    linksfile.write('linkki')
-                    j += 1
         linksfile.close()
