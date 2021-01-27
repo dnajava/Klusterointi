@@ -102,29 +102,29 @@ class nclusters:
         linksfile.write('Source, Target, Type, Id, Label, timeset, Weight\n')
 
         for c in self.nclusters:
-            stri = str(i)
-            print('stri=',stri)
-            stri += ', M' + str(i) + ','                                  # Write  node id  1,M1 2,M2 ...
-            print('2. stri=',stri)
-            nodesfile.write(stri + '\n')
+            stri = str(i) + ', M' + str(i) + ',\n'                                  # Write  node id  1,M1 2,M2 ...
+            nodesfile.write(stri)
             i += 1
             cur_node = i
 
+            link_id = 0
             for match in c:
                 if match[6] == '':
-                    str2 = str(i)
-                    str2 += ', Unkwnown MDKA,' + '\n'
+                    str2 = str(i) + ', Unkwnown MDKA,' + '\n'
                     nodesfile.write(str2)
                     i += 1
-                    str4 = str(i) + ',' + str(cur_node) + ',\n'
+                    # Source, Target, Type, Id, Label, timeset, Weight
+                    str4 = str(i) + ',' + str(cur_node) + ',Directed,' + str(link_id) + ',,,10,\n'
                     linksfile.write(str4)
+                    link_id += 1
                 else:
-                    str2 = str(i)
-                    str2 += ', ' + match[6].replace(',', '') + ',\n'          # Take commas away from MDKA's
+                    str2 = str(i) + ', ' + match[6].replace(',', '') + ',\n'          # Take commas away from MDKA's
                     nodesfile.write(str2)
                     i += 1
-                    str4 = str(i) + ',' + str(cur_node) + ',\n'
+                    # Source, Target, Type, Id, Label, timeset, Weight
+                    str4 = str(i) + ',' + str(cur_node) + ',Directed,' + str(link_id) + ',,,10,\n'
                     linksfile.write(str4)
+                    link_id += 1
 
         nodesfile.close()
         linksfile.close()
