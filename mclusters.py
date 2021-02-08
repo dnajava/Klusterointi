@@ -25,6 +25,7 @@ class mclusters:
         self.gd = [self.gd0, self.gd1, self.gd2, self.gd3]
         self.name = name_p
         self.fname = fname_p
+        # TODO: Koodaa nämä fiksummin, jos voi.
 
     def show(self, debug2_p = False, debug3_p = False):
         i = 0
@@ -61,7 +62,7 @@ class mclusters:
             csv_reader = reader(read_obj)
             for m in csv_reader:
                 if ind > 0:
-                    matches.append(m)
+                    matches.append(tuple(m))
                 ind += 1
 
         for x in matches:
