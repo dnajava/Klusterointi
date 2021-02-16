@@ -58,12 +58,19 @@ class mclusters:
         ind = 0
         matches = []
 
-        with open(fname_p, 'r') as read_obj:
-            csv_reader = reader(read_obj)
-            for m in csv_reader:
-                if ind > 0:
-                    matches.append(tuple(m))
-                ind += 1
+        try:
+            with open(fname_p, 'r') as read_obj:
+                csv_reader = reader(read_obj)
+                for m in csv_reader:
+                    if ind > 0:
+                        matches.append(tuple(m))
+                    ind += 1
+        except (IOError, OSError) as err:
+            print(err)
+            return []
+        finally:
+            if read_obj is not None:
+                read_obj.close()
 
         for x in matches:
             if x[0] == '0':
