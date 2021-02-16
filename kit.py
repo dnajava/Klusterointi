@@ -1,11 +1,12 @@
 # Kit contains kit id and name of tested person and match list date
+# Maybe some day the parameters are in csv-file
 
 from csv import reader
 from datetime import date
 import mclusters
 
 class kit:
-    dl_directory = '/home/user/Downloads/'
+    dl_directory = '/home/ilpo/Lataukset/'
     kfname = 'kits.csv'
     file = ''
     mclu = None
@@ -19,12 +20,14 @@ class kit:
         self.mclu.read_clusters(self.file)                                                        # Read kit's mt-dna matches
 
     def mk_mclu(self, name_p, file_p):
+        # today = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
         mclu = mclusters.mclusters(self.name, self.file)
         self.file = self.dl_directory + self.id + '_mtDNA_Matches_' + self.date + '.csv'
         self.mclu = mclusters.mclusters(self.name, self.file)
         self.mclu.read_clusters(self.file)  # Read kit's mt-dna matches
 
     def __init__(self,id_p,name_p, day_p):
+        # self.date = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
         self.date = day_p
         self.id = id_p
         self.name = name_p
@@ -32,10 +35,18 @@ class kit:
 
     def read_kits():
         tempkits = []
-        with open('kits.csv', 'r') as read_obj:
-            csv_reader = reader(read_obj)
-            for k in csv_reader:
-                    tempkits.append(k)
+        try:
+            with open('kits.csv', 'r') as read_obj:
+                csv_reader = reader(read_obj)
+                for k in csv_reader:
+                        tempkits.append(k)
+        except (IOError, OSError) as err:
+            print(err)
+            return []
+        finally:
+            if  read_obj is not None:
+                read_obj.close()
+
         return tempkits
 
     def getname(self):
