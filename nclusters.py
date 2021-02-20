@@ -65,24 +65,39 @@ class nclusters:
                             line1 = False
                 i += 1
 
-    def show_cluster_mdkas(self, cluster_p):
+    def show_mdkas(self, cluster_p=None):
+        unknown = known = 0
         i = 0
-        for clu in self.nclusters:
-            if i == cluster_p:
+        if cluster_p != None:
+            unknown = known = 0
+            for clu in self.nclusters:
+                if i == cluster_p:
+                    print('Cluster', i+1)
+                    for match in clu:
+                        if match[6] == '':
+                            unknown += 1
+                        else:
+                            known += 1
+                            print(match[6])
+                i = i+1
+            if unknown:
+                if known:
+                    print('And ', end=''),
+                print(unknown, 'unknown MDKAs')
+        else:
+            for clu in self.nclusters:
+                print('\nCluster', i+1)
                 for match in clu:
                     if match[6] == '':
-                        print('Unknown MDKA')
+                        unknown += 1
                     else:
-                        print('MDKA', match[6])
-            i = i+1
-
-    def show_all_mdkas(self):
-        for clu in self.nclusters:
-            for match in clu:
-                if match[6] == '':
-                    print('Unknown MDKA')
-                else:
-                    print('MDKA', match[6])
+                        known += 1
+                        print(match[6])
+                if unknown:
+                    if known:
+                        print('And ', end=''),
+                    print(unknown, 'unknown MDKAs')
+                i += 1
 
     def write_gephi_sources(self):
         # Write nodes.csv and links.csv
