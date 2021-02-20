@@ -292,9 +292,26 @@ class nclusters:
         else:
             return False
 
-    @staticmethod
-    def to_be_splitted():
+    def to_be_splitted(self, debug=False):
         # TODO: Add code to search clusters, which need split
+        # One method is taking a pair clusters and check if they have just same matches.
+        return False
+
+        found = False
+        if(debug):
+            print('Nclusters to_be_splitted()')
+
+        ind1 = 0
+        for clu in self.nclusters:
+            ind2 = ind1 + 1
+            for clu2 in self.nclusters[(ind1+1):]:                # Compare first iterable with next to end of list
+                if debug:
+                    print('O =', ind1, ', I =', ind2)
+                    print(clu, '\n', clu2)
+                # Test if the two cluster have matches which have different GD-value than others.
+                # So, they belongs to other new cluster
+
+
         return False
 
     @staticmethod
