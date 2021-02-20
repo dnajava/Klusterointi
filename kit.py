@@ -6,32 +6,37 @@ from datetime import date
 import mclusters
 
 class kit:
+    id = ''                                                                               # Kit id in FTDNA
+    name = ''                                                                             # Kit's owner real name
     dl_directory = '/home/ilpo/Lataukset/'
     kfname = 'kits.csv'
-    file = ''
+    file = ''                                                                             # Matchlist filename
     mclu = None
 
     def __init__(self, id_p, name_p, day_p):
         self.id = id_p
-        self.name = name_p
+        self.name = name_p                                                                # Kit owners real name
         self.date = day_p
         self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
         self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_clusters(self.file)                                                        # Read kit's mt-dna matches
+        self.mclu.read_clusters(self.file)                                                # Read kit's mt-dna matches
 
-    def mk_mclu(self, name_p, file_p):
-        # today = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
-        mclu = mclusters.mclusters(self.name, self.file)
-        self.file = self.dl_directory + self.id + '_mtDNA_Matches_' + self.date + '.csv'
-        self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_clusters(self.file)  # Read kit's mt-dna matches
-
-    def __init__(self,id_p,name_p, day_p):
+    def __init__(self, id_p, name_p, day_p):
+        self.id = id_p
+        self.name = name_p  # Kit owners real name
+        self.date = day_p
+        self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
         # self.date = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
         self.date = day_p
         self.id = id_p
         self.name = name_p
         self.mk_mclu(self.name, self.file)
+
+    def mk_mclu(self, file_p, name_p):
+        mclu = mclusters.mclusters(self.name, self.file)
+        self.file = self.dl_directory + self.id + '_mtDNA_Matches_' + self.date + '.csv'
+        self.mclu = mclusters.mclusters(self.name, self.file)
+        self.mclu.read_clusters(self.file, self.name)  # Read kit's mt-dna matches
 
     def read_kits():
         tempkits = []
@@ -39,6 +44,7 @@ class kit:
             with open('kits.csv', 'r') as read_obj:
                 csv_reader = reader(read_obj)
                 for k in csv_reader:
+                        k[1] = k[1].strip() + ' '               # One space after name like match names have
                         tempkits.append(k)
         except (IOError, OSError) as err:
             print(err)
@@ -55,7 +61,7 @@ class kit:
     def getfilen(self):
         return self.file
 
-    def show(self, debug1_p = False, debug2_p = False, debug3_p = False):
+    def show(self, debug1_p=False, debug2_p=False, debug3_p=False):
         if debug1_p != False:
             print('##### Kit', self.id, '#####', self.name, '#####')           # Show only minimal information:
             if debug2_p != False:                                              # Kit id and name.
