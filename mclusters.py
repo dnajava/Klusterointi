@@ -25,7 +25,7 @@ class mclusters:
         self.gd = [self.gd0, self.gd1, self.gd2, self.gd3]
         self.name = name_p
         self.fname = fname_p
-        # TODO: Koodaa nämä fiksummin, jos voi.
+        # TODO: Code this more clever, if you can.
 
     def show(self, debug2_p = False, debug3_p = False):
         i = 0
@@ -39,7 +39,7 @@ class mclusters:
                 print('')
         print('')
 
-    def get_cluster(self, level = 0):
+    def get_cluster(self, level=0):
         if level == 0:
             if self.gd0 != None:
                 return self.gd0
@@ -54,9 +54,13 @@ class mclusters:
                 return self.gd3
 
 
-    def read_clusters(self, fname_p):
+    def read_clusters(self, fname_p, pname_p):
         ind = 0
         matches = []
+        read_obj = None
+
+        # You have to add kit's owner to first cluster. Why? Read documents.
+        self.gd0.append(('0',pname_p,'','','','','','',''))                       # Add as a tuple
 
         try:
             with open(fname_p, 'r') as read_obj:
