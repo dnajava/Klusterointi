@@ -66,11 +66,11 @@ class nclusters:
                 i += 1
 
     def show_mdkas(self, cluster_p=None):
-        unknown = 0
-        known = 0
         i = 0
         if cluster_p == None:
             for clu in self.nclusters:
+                unknown = 0
+                known = 0
                 print('\nCluster', i+1)
                 for match in clu:
                     if match[6] == '':
@@ -87,6 +87,8 @@ class nclusters:
         else:
             for clu in self.nclusters:
                 if i == cluster_p:
+                    unknown = 0
+                    known = 0
                     print('\nCluster', i+1)
                     for match in clu:
                         if match[6] == '':
