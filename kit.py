@@ -8,7 +8,7 @@ import mclusters
 class kit:
     id = ''                                                                               # Kit id in FTDNA
     name = ''                                                                             # Kit's owner real name
-    dl_directory = '/home/ilpo/Lataukset/'
+    dl_directory = '/home/user/Downloads/'
     kfname = 'kits.csv'
     file = ''                                                                             # Matchlist filename
     mclu = None
