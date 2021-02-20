@@ -4,7 +4,7 @@
 class nclusters:
     def __init__(self, id_p, gd_p):
         self.id = id_p
-        self.names = gd_p                    # This cluster has all kits of mcluster
+        self.names = gd_p                    # This cluster has all clusters of a kit
         self.links = []
         self.ind = 0
         self.nclusters = []
@@ -13,17 +13,57 @@ class nclusters:
         self.nclusters = []
         self.ind = 0
 
-    def add(self, cluster_p=[]):
-        # First we create a tuple whwre is node name and then list of persons (oldest mother line mother)
+    def add(self, cluster_p):
+        # First we create a tuple where is node name and then list of persons (oldest mother line mother)
         self.nclusters.append(cluster_p)
         self.ind += 1
 
+    def amountclusters(self):
+        i = 0
+        for _ in self.nclusters:
+            i += 1
+        return i
+
+
+# === Show or output clusters
+
     def show(self):
-        print('NETCLUSTERS ===================================================')
+        print('Net clusters:')
+        i = 0
         for a in self.nclusters:
-            print(a)
-            print('----------')
-        print('NETCLUSTERS ===================================================')
+            print('Cluster', i, ' ', end='')
+            print(a, end='')
+            print(' ')
+            i += 1
+        exit(0)
+
+    def mk_txt(self, cluster_p=None):
+        if cluster_p is None:
+            print('MDKAs of GD-clusters')
+            i = 0
+            for c in self.nclusters:
+                line1 = True
+                for m in c:
+                    if m[6] != '':
+                        if line1:
+                            print('Cluster', i)
+                        print(' ' + m[6].strip(','))
+                        line1 = False
+                i += 1
+        else:
+            print('MDKAs of GD-', end=''),
+            line1 = True
+            i = 0
+            for c2 in self.nclusters:
+                if i == cluster_p:
+                    # Now we are in right cluster
+                    for m in c2:
+                        if m[6] != '':
+                            if line1:
+                                print('Cluster', i, '\n', end=''),
+                            print(' ' + m[6].strip(','))
+                            line1 = False
+                i += 1
 
     def show_cluster_mdkas(self, cluster_p):
         i = 0
@@ -44,57 +84,12 @@ class nclusters:
                 else:
                     print('MDKA', match[6])
 
-    def find_duplicates(self,cluster_p):
-        # https: // stackoverflow.com / questions / 1388818 / how - can - i - compare - two - lists - in -python - and -
-        # return -matches
-        # Sort cluster_p, sort clusters in nclusters if you are not using above method
-
-        # If you find same mdka in other cluster, it is duplicate.
-        # In same cluster there can be several same mdka's
-        # Don't remove duplicates before splitting is done.
-        found = False
-        ind = 0
-        for clu in nclusters:
-            for clu2 in nclusters[clu[0]+1]:                # Compare first iterable with next to end of list
-               if (cluster_p == clu and ind > clu[0]):      # First cluster is not a duplicate
-                    found = True
-                    this.nclusters.pop(ind)
-
-        if found:
-            return found
-
-    def remove(self, toremove_p):
-        if toremove_p < len(this.nclusters):
-            self.nclusters.pop(toremove_p)
-            return True
-        else:
-            return False
-
-    def to_be_splitted(self):
-        # TODO: Koodaa nclusters etsi splittitarpeita
-        return False
-
-    def split(self, node_p):
-        # TODO: Koodaa klusterin splittaus
-        return False
-
-    def clusteramount(self):
-        i = 0
-        for a in self.nclusters:
-            i += 1
-        return i
-
-    def addlink(self,another):
-        self.links.add(another)
-
-    def split_cluster(self):
-        print("Coming soon!")
-        return
-
     def write_gephi_sources(self):
         # Write nodes.csv and links.csv
-        # Next generation would have nodes in file and get them from there
+        # TODO: Add links between clusters.
 
+        link_weight_persons = 80
+        # link_weight_hubs = 200
         i = 0
         nodesfile = open("nodes.csv", "w")
         nodesfile.write('Id, Label, timeset\n')
@@ -114,7 +109,8 @@ class nclusters:
                     nodesfile.write(str2)
                     i += 1
                     # Source, Target, Type, Id, Label, timeset, Weight
-                    str4 = str(i) + ',' + str(cur_node) + ',Directed,' + str(link_id) + ',,,10,\n'
+                    str4 = str(i) + ',' + str(cur_node) + ',Directed,' + str(link_id)
+                    str4 += ',,,' + str(link_weight_persons) + '\n'
                     linksfile.write(str4)
                     link_id += 1
                 else:
@@ -122,9 +118,187 @@ class nclusters:
                     nodesfile.write(str2)
                     i += 1
                     # Source, Target, Type, Id, Label, timeset, Weight
-                    str4 = str(i) + ',' + str(cur_node) + ',Directed,' + str(link_id) + ',,,10,\n'
+                    str4 = str(i) + ',' + str(cur_node) + ',Directed,' + str(link_id) + ',,,'
+                    str4 += str(link_weight_persons) +'\n'
                     linksfile.write(str4)
                     link_id += 1
-
         nodesfile.close()
         linksfile.close()
+
+    # Not working yet
+    def mk_spreadsheet(self):
+        # TODO: Add code to make a spreadsheet
+        # Spreadsheet header
+        for c in self.nclusters:
+            line1 = True
+            for m in c:
+                if m[6] != '':
+                    if line1:
+                        print('Cluster', m[0])
+                    txt = ' ' + m[6].strip(',')
+                    print(txt)
+                    line1 = False
+        # Spreadsheet end
+
+    def mk_xml(self):
+        # TODO: Add code to output other fields of match than mdka
+        # Spreadsheet header
+
+        print('<clusters>')                                 # Start of xml
+        for c in self.nclusters:
+            # line1 = True
+            print('<cluster>')                              # Start of cluster
+            for m in c:
+                if m[6] != '':
+                    print('<match>', end=''),
+                    print(m[6].strip(','), end=''),
+                    print('</match>')
+            print('</cluster>')
+        print('</clusters>')                                 # End of XML
+
+
+# === Cluster operations
+
+    def sort_mdkas(self):
+        # This method sorts cluster mdkas to ascending order
+        return False
+
+    @staticmethod
+    def is_equal_cluster(list_p1, list_p2):
+        # https://thispointer.com/python-check-if-all-elements-in-a-list-are-same-or-matches-a-condition/
+        if len(list_p1) != len(list_p2):
+            return False
+        i = 0
+        for e in list_p1:
+            if e == list_p2[i]:
+                i += 1
+            else:
+                return False
+        return True
+
+    @staticmethod
+    def samematch(m1_p, m2_p, debug1=False):
+        for m1 in m1_p:
+            for m2 in m2_p:
+                if m1_p[1] == m2_p[1]:
+                    if debug1 == True:
+                        print('Same match: ', m1_p[1], ' ', m2_p[2], ' !!')
+                    return True
+        return False
+
+
+    @staticmethod
+    def samecluster(clu1_p, clu2_p, debug1=False):
+        if len(clu1_p) != len(clu2_p):
+            if debug1:
+                print('nclusters.samecluster(): Different clusters, not as long.')
+            return False
+
+        # Both clusters are the same length. Analyze matches deeper.
+        i = 0
+        for i in range(len(clu1_p)):
+            j = 0
+            for j in range(len(clu2_p)):
+                if nclusters.samematch(clu1_p[i], clu2_p[j], False):
+                    if debug1:
+                        print('nclusters.samecluster(): Same cluster because there is at least one same name.')
+                    return True
+                j += 1
+            i += 1
+        return False
+
+    def delete_duplicates(self, debug=False):
+        # https://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
+        # Do you want sorting? Sort cluster_p, sort clusters in nclusters if you are not using above method.
+
+        # FIXME: Check that it deletes right duplicate clusters
+        # FIXME: If there is only one cluster, or none.
+        found = False
+        if(debug):
+            print('Nclusters delete_duplicates()')
+
+        ind1 = 0
+        for clu in self.nclusters:
+            ind2 = ind1 + 1
+            for clu2 in self.nclusters[(ind1+1):]:                # Compare first iterable with next to end of list
+                if debug:
+                    print('O =', ind1, ', I =', ind2)
+                    print(clu, '\n', clu2)
+
+                if nclusters.samecluster(clu, clu2, debug):
+                    found = True
+                    if debug:
+                        print('Clusters were similair! Before popping lenght =', len(self.nclusters))
+
+                    self.nclusters.pop(ind2)
+                    if debug:
+                        print('After popping lenght =', len(self.nclusters))
+
+                    ind2 += 1
+                    return True
+                else:
+                    if debug:
+                        print('Clusters were different.\n')
+                    ind2 += 1
+            ind1 += 1
+        if found:
+            return found
+
+        def kakki(self):
+            # https://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
+            # Do you want sorting? Sort cluster_p, sort clusters in nclusters if you are not using above method.
+
+            # FIXME: Check that it deletes right duplicate clusters
+            # FIXME: If there is only one cluster, or none.
+            found = False
+            print('We are now in delete_duplicates2.')
+            ind1 = 0
+
+            for x in range(4):
+                print(self.nclusters[x])
+
+            return False
+
+
+            for clu in self.nclusters:
+                print('o', end=''),
+                ind2 = ind1 + 1
+                for clu2 in self.nclusters[(ind1 + 1):]:  # Compare first iterable with next to end of list
+                    print('i', end=''),
+                    # if is_equal_cluster(clu,clu2) == True:
+                    if nclusters.sama(clu, clu2):
+                        found = True
+                        print(' ')
+                        print("D", ind2)
+                        self.nclusters.pop(ind2)
+                        ind2 += 1
+                    else:
+                        ind2 += 1
+                    print(' ')
+                ind1 += 1
+            if found:
+                return found
+
+    def remove(self, toremove_p):
+        if toremove_p < len(self.nclusters):
+            self.nclusters.pop(toremove_p)
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def to_be_splitted():
+        # TODO: Add code to search clusters, which need split
+        return False
+
+    @staticmethod
+    def split_cluster():
+        # TODO: Add code to split cluster when needed
+        print("Coming soon!")
+        return
+
+
+# Network operations
+
+    def addlink(self, another_p):
+        self.links.append(another_p)
