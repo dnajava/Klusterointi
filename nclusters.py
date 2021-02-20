@@ -244,41 +244,6 @@ class nclusters:
         if found:
             return found
 
-        def kakki(self):
-            # https://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
-            # Do you want sorting? Sort cluster_p, sort clusters in nclusters if you are not using above method.
-
-            # FIXME: Check that it deletes right duplicate clusters
-            # FIXME: If there is only one cluster, or none.
-            found = False
-            print('We are now in delete_duplicates2.')
-            ind1 = 0
-
-            for x in range(4):
-                print(self.nclusters[x])
-
-            return False
-
-
-            for clu in self.nclusters:
-                print('o', end=''),
-                ind2 = ind1 + 1
-                for clu2 in self.nclusters[(ind1 + 1):]:  # Compare first iterable with next to end of list
-                    print('i', end=''),
-                    # if is_equal_cluster(clu,clu2) == True:
-                    if nclusters.sama(clu, clu2):
-                        found = True
-                        print(' ')
-                        print("D", ind2)
-                        self.nclusters.pop(ind2)
-                        ind2 += 1
-                    else:
-                        ind2 += 1
-                    print(' ')
-                ind1 += 1
-            if found:
-                return found
-
     def remove(self, toremove_p):
         if toremove_p < len(self.nclusters):
             self.nclusters.pop(toremove_p)
