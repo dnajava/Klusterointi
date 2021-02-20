@@ -35,7 +35,6 @@ class nclusters:
             print(a, end='')
             print(' ')
             i += 1
-        exit(0)
 
     def mk_txt(self, cluster_p=None):
         if cluster_p is None:
@@ -101,6 +100,30 @@ class nclusters:
                 if known:
                     print('And ', end=''),
                 print(unknown, 'unknown MDKAs')
+
+
+    def amount_unknown_mdkas(self, cluster_p=None):
+        i = 0
+        if cluster_p == None:
+            for clu in self.nclusters:
+                unknown = 0
+                print('\nCluster', i+1)
+                for match in clu:
+                    if match[6] == '':
+                        unknown += 1
+                i += 1
+            return unknown
+        else:
+            for clu in self.nclusters:
+                if i == cluster_p:
+                    unknown = 0
+                    print('\nCluster', i+1)
+                    for match in clu:
+                        if match[6] == '':
+                            unknown += 1
+                i = i+1
+            return unknown
+
 
     def write_gephi_sources(self):
         # Write nodes.csv and links.csv
@@ -277,8 +300,7 @@ class nclusters:
     @staticmethod
     def split_cluster():
         # TODO: Add code to split cluster when needed
-        print("Coming soon!")
-        return
+        return False
 
 
 # Network operations
