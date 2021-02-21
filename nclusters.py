@@ -340,15 +340,14 @@ class nclusters:
 # File operations
 
     def read(self, fname_p='mt-dna.json'):
+        # FIXME: Check that this works fine.
         with open(fname_p, 'r') as f:
             self.nclusters = json.load(f)
-        return False
 
     def write(self, fname_p='mt-dna.json'):
         # Use Json to save network
         # https://stackoverflow.com/questions/27745500/how-to-save-a-list-to-a-file-and-read-it-as-a-list-type
-
+        # FIXME: Check that this works fine.
         with open(fname_p, 'w') as f:
             # indent=2 is not needed but makes the file human-readable
             json.dump(self.nclusters, f, indent=2)
-        return False
