@@ -1,6 +1,11 @@
 # Network clusters. Tools to add nodes, find duplicate clusters, delete duplicate clusters, split cluster.
 # Copyright Ilpo Kantonen 2021.
 
+# FIXME: Add PYPI pyexcel_ods3
+# import pyexcel_ods3
+# from pyexel_io import save_data
+import json
+
 class nclusters:
     def __init__(self, id_p, gd_p):
         self.id = id_p
@@ -167,19 +172,21 @@ class nclusters:
         linksfile.close()
 
     # Not working yet
-    def mk_spreadsheet(self):
-        # TODO: Add code to make a spreadsheet
-        # Spreadsheet header
-        for c in self.nclusters:
-            line1 = True
-            for m in c:
-                if m[6] != '':
-                    if line1:
-                        print('Cluster', m[0])
-                    txt = ' ' + m[6].strip(',')
-                    print(txt)
-                    line1 = False
-        # Spreadsheet end
+    def mk_spreadsheet(self, fname_p='spreadsheet.ods'):
+        # Uses pyexel-ods3 package https://pypi.org/project/pyexcel-ods3/
+
+        # ods_save
+        sheet = []
+        clu = []
+
+        # FIXME: Add code to make a spreadsheet and save it to file
+
+        i = 0
+        for x in self.nclusters:
+            for x2 in x:
+                clu += x2
+            sheet += clu
+        ods_save.save_data(fname_p, sheet)
 
     def mk_xml(self):
         # TODO: Add code to output other fields of match than mdka
@@ -269,7 +276,10 @@ class nclusters:
                 if nclusters.samecluster(clu, clu2, debug):
                     found = True
                     if debug:
-                        print('Clusters were similair! Before popping lenght =', len(self.nclusters))
+                        print('Clusters are similair! Before popping lenght =', len(self.nclusters))
+                        print('********** POISTETAAN CLUSTERIT', ind1, ' JA ', ind2, '**********')
+                        # self.show_mdkas(ind1)
+                        # self.show_mdkas(ind2)
 
                     self.nclusters.pop(ind2)
                     if debug:
@@ -295,6 +305,10 @@ class nclusters:
     def to_be_splitted(self, debug=False):
         # TODO: Add code to search clusters, which need split
         # One method is taking a pair clusters and check if they have just same matches.
+
+        # Second method is to take one tested and compare it's matches to all other tested. If all tested have same
+        # GD values to all cluster matches, split is saturated. If not, there is something to split
+
         return False
 
         found = False
@@ -310,8 +324,6 @@ class nclusters:
                     print(clu, '\n', clu2)
                 # Test if the two cluster have matches which have different GD-value than others.
                 # So, they belongs to other new cluster
-
-
         return False
 
     @staticmethod
@@ -324,3 +336,19 @@ class nclusters:
 
     def addlink(self, another_p):
         self.links.append(another_p)
+
+# File operations
+
+    def read(self, fname_p='mt-dna.json'):
+        with open(fname_p, 'r') as f:
+            self.nclusters = json.load(f)
+        return False
+
+    def write(self, fname_p='mt-dna.json'):
+        # Use Json to save network
+        # https://stackoverflow.com/questions/27745500/how-to-save-a-list-to-a-file-and-read-it-as-a-list-type
+
+        with open(fname_p, 'w') as f:
+            # indent=2 is not needed but makes the file human-readable
+            json.dump(self.nclusters, f, indent=2)
+        return False
