@@ -7,3 +7,4 @@ This program can read FTDNA mt-dna mach lists in csv form. It adds several perso
 TODO:
 
 - Split the cluster, if it contains matches which have other matches than common matches in that cluster
+- Save mutation network to disk. And retrieve mutation network from disk.
