@@ -1,6 +1,16 @@
 __author__ = "Ilpo Kantonen"
 __date__ = "$20.1.2021 2:01:51$"
-# Cluster network program
+# Cluster network program. It makes nodes.csv and links.csv to Gephi. Gephi can display a network of mt-dna matches
+# in one haplogroup. The match clusters can be subgroups to that haplogroup. Grouping depends on GD values between
+# matches. You can also print MDKA:s as txt and xml file and a spreadsheet.
+
+# This is the main purpose to this program. You can do other things with this program too. Be free to modify code.
+# If you think you know better methods to do something, feel free to contact and tell to Ilpo at ilpo@iki.fi.
+
+# Input to this program are downloaded mt-dna match lists from FTDNA. Output are nodes.csv and links.csv. With Gephi
+# you can do bautiful graphs of GD network.
+
+# Version 0.1.1.
 
 from kit import kit
 import nclusters
@@ -27,15 +37,16 @@ if __name__ == '__main__':
     if dint:
         print('Removed', dint, 'duplicate clusters.')
 
+    # netclusters.write('U8a1a1b1_unduplicated.json')
+
     sint = 0
     while netclusters.split_clusters(True):             # Then split non GD uniform clusters
         sint += 1
     if sint:
         print('Splitted', sint, ' clusters.')
 
-    netclusters.write('U8a1a1b1_unduplicated.json')
+    # netclusters.write('U8a1a1b1_splitted.json')
 
-#    print('Popped', aint, 'duplicate clusters. After it there are', netclusters.amountclusters(), 'clusters.')
 #    netclusters.show_mdkas()                            # Print all clusters (MDKAs)
 
     # netclusters.mk_txt(1)                             # Print one cluster (MDKAs)
