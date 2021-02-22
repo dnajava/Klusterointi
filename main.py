@@ -1,5 +1,5 @@
-__author__="Ilpo Kantonen"
-__date__ ="$20.1.2021 2:01:51$"
+__author__ = "Ilpo Kantonen"
+__date__ = "$20.1.2021 2:01:51$"
 # Cluster network program
 
 from kit import kit
@@ -15,22 +15,31 @@ if __name__ == '__main__':
 
     netclusters = nclusters.nclusters()
     for k in kits:                                      # Add every kits every GD clusters to netclusters
-        for i in range(0,4):
+        for i in range(0, len(kits)+1):
             if(k.mclu.gd[i] != None):
                 netclusters.add(k.mclu.get_cluster(i))
 
-    # netclusters.show_all_mdkas()
-    # netclusters.show_cluster_mdkas(1)                 # Print cluster 1 mdkas or unknown
+    # netclusters.write('U8a1a1b1_duplicated.json')
 
-    #    while True:                                    # Do while nodes which should be splitted
-    #        node =  netclusters.to_be_splitted()
-    #        if node == None:
-    #            break
-    #        netclusters.split(node)
-    #        # FIXME: Test this, that it works
+    dint = 0
+    while netclusters.delete_duplicates():              # First delete duplicates
+        dint += 1
+    if dint:
+        print('Removed', dint, 'duplicate clusters.')
 
-    p = 0
-    while netclusters.delete_duplicates():              # Do while duplicate clusters
-            p += 1
+    sint = 0
+    while netclusters.split_clusters(True):             # Then split non GD uniform clusters
+        sint += 1
+    if sint:
+        print('Splitted', sint, ' clusters.')
 
-    netclusters.write_gephi_sources()                   # Write nodes.csv and links.csv to Gephi
+    netclusters.write('U8a1a1b1_unduplicated.json')
+
+#    print('Popped', aint, 'duplicate clusters. After it there are', netclusters.amountclusters(), 'clusters.')
+#    netclusters.show_mdkas()                            # Print all clusters (MDKAs)
+
+    # netclusters.mk_txt(1)                             # Print one cluster (MDKAs)
+    # netclusters.mk_xml()                              # Print in XML form
+
+    # netclusters.write_gephi_sources()                   # Write nodes.csv and links.csv to Gephi
+
