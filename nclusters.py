@@ -370,11 +370,6 @@ class nclusters:
                     return True
         return False
 
-# Network operations
-
-    def addlink(self, another_p):
-        self.links.append(another_p)
-
 # File operations
 
     def read(self, fname_p='mt-dna.json'):
