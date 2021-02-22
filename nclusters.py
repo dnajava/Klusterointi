@@ -10,11 +10,13 @@ class nclusters:
     def __init__(self, id_p, gd_p):
         self.id = id_p
         self.names = gd_p                    # This cluster has all clusters of a kit
+        self.haplogroup = 'Default'
         self.links = []
         self.ind = 0
         self.nclusters = []
 
     def __init__(self):
+        self.haplogroup = 'Default'
         self.nclusters = []
         self.ind = 0
 
@@ -255,15 +257,31 @@ class nclusters:
             i += 1
         return False
 
+    def copy_extra_matches(self, clu_p1, clu_p2, debug=False):
+        extras = []
+        for c2 in clu_p2:
+            found = False
+            for c1 in clu_p1:
+                if c2[1] == c1[1]:
+                    found = True
+            if not found:
+                if debug:
+                    print("Add extra match from duplicate cluster to original.")
+                extras.append(c2)
+        if len(extras):
+            clu_p1.append(extras)
+
     def delete_duplicates(self, debug=False):
         # https://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
         # Do you want sorting? Sort cluster_p, sort clusters in nclusters if you are not using above method.
+        # FIXME: Check again if right duplicate clusters are deleted.
 
-        # FIXME: Check that it deletes right duplicate clusters
-        # FIXME: If there is only one cluster, or none.
         found = False
         if(debug):
             print('Nclusters delete_duplicates()')
+
+        if len(self.nclusters) < 1:                      # There is 1 or 0 clusters
+            return False
 
         ind1 = 0
         for clu in self.nclusters:
@@ -277,10 +295,11 @@ class nclusters:
                     found = True
                     if debug:
                         print('Clusters are similair! Before popping lenght =', len(self.nclusters))
-                        print('********** POISTETAAN CLUSTERIT', ind1, ' JA ', ind2, '**********')
-                        # self.show_mdkas(ind1)
-                        # self.show_mdkas(ind2)
+                        self.show_mdkas(ind1)
+                        self.show_mdkas(ind2)
 
+                    # Cluster to be deleted can contain matches, which original cluster don't have
+                    self.copy_extra_matches(clu, clu2)
                     self.nclusters.pop(ind2)
                     if debug:
                         print('After popping lenght =', len(self.nclusters))
@@ -340,14 +359,12 @@ class nclusters:
 # File operations
 
     def read(self, fname_p='mt-dna.json'):
-        # FIXME: Check that this works fine.
         with open(fname_p, 'r') as f:
             self.nclusters = json.load(f)
 
     def write(self, fname_p='mt-dna.json'):
         # Use Json to save network
         # https://stackoverflow.com/questions/27745500/how-to-save-a-list-to-a-file-and-read-it-as-a-list-type
-        # FIXME: Check that this works fine.
         with open(fname_p, 'w') as f:
             # indent=2 is not needed but makes the file human-readable
             json.dump(self.nclusters, f, indent=2)
