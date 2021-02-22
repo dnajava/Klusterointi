@@ -8,7 +8,7 @@ __date__ = "$20.1.2021 2:01:51$"
 # If you think you know better methods to do something, feel free to contact and tell to Ilpo at ilpo@iki.fi.
 
 # Input to this program are downloaded mt-dna match lists from FTDNA. Output are nodes.csv and links.csv. With Gephi
-# you can do bautiful graphs of GD network.
+# you can do beautiful graphs of GD network.
 
 # Version 0.1.1.
 
