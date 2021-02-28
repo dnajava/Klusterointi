@@ -1,7 +1,10 @@
-# Network clusters. Tools to add nodes, find duplicate clusters, delete duplicate clusters, split cluster.
-# Copyright Ilpo Kantonen 2021.
+"""
+Network of mt-dna GD clusters. Tools to add nodes, find and delete duplicate clusters, split cluster. Export to
+txt, xml or spreadsheet. And make nodes.csv and links.csv to Gephi.
+Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to author.
+"""
 
-# FIXME: Add PYPI pyexcel_ods3
+# FIXME: pip3 install pyexcel-ods3 (doesn't work)
 # import pyexcel_ods3
 # from pyexel_io import save_data
 import json
@@ -21,8 +24,6 @@ class nclusters:
         self.haplogroup = 'Default'
         self.nclusters = []
         self.ind = 0
-
-
 
 # === Show or output clusters
 
@@ -153,20 +154,17 @@ class nclusters:
         return True
 
     @staticmethod
-    def samematch(m1_p, m2_p, debug1=False):
+    def samematch(m1_p, m2_p):
         for m1 in m1_p:
             for m2 in m2_p:
                 if m1_p[1] == m2_p[1]:
-                    if debug1 == True:
-                        print('Same match: ', m1_p[1], ' ', m2_p[2], ' !!')
                     return True
         return False
 
     @staticmethod
-    def samecluster(clu1_p, clu2_p, debug1=False):
+    def samecluster(clu1_p, clu2_p):
+        print('samecluster')
         if len(clu1_p) != len(clu2_p):
-            if debug1:
-                print('nclusters.samecluster(): Different clusters, not as long.')
             return False
 
         # Both clusters are the same length. Analyze matches deeper.
@@ -174,9 +172,8 @@ class nclusters:
         for i in range(len(clu1_p)):
             j = 0
             for j in range(len(clu2_p)):
-                if nclusters.samematch(clu1_p[i], clu2_p[j], False):
-                    if debug1:
-                        print('nclusters.samecluster(): Same cluster because there is at least one same name.')
+                a = 1
+                if nclusters.samematch(clu1_p[i], clu2_p[j]):
                     return True
                 j += 1
             i += 1
@@ -197,7 +194,7 @@ class nclusters:
             i += 1
         return i
 
-    def copy_extra_matches(self, clu_p1, clu_p2, debug=False):
+    def copy_extra_matches(self, clu_p1, clu_p2):
         extras = []
         for c2 in clu_p2:
             found = False
@@ -205,55 +202,33 @@ class nclusters:
                 if c2[1] == c1[1]:
                     found = True
             if not found:
-                if debug:
-                    print("Add extra match from duplicate cluster to original.")
                 extras.append(c2)
         if len(extras):
             clu_p1.append(extras)
 
-    def delete_duplicates(self, debug=False):
+    def delete_duplicates(self):
         """
         :param debug:
         :return:
 
         U{https://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches}
         """
-
-        # FIXME: Check again if right duplicate clusters are deleted.
-
-        found = False
-        if(debug):
-            print('Nclusters delete_duplicates()')
-
         if len(self.nclusters) < 1:                      # There are only 1 or 0 clusters
             return False
 
+        # FIXME: Check again if right duplicate clusters are deleted.
+        found = False
         ind1 = 0
         for clu in self.nclusters:
             ind2 = ind1 + 1
             for clu2 in self.nclusters[(ind1+1):]:                # Compare first iterable with next to end of list
-                if debug:
-                    print('O =', ind1, ', I =', ind2)
-                    print(clu, '\n', clu2)
-
-                if nclusters.samecluster(clu, clu2, debug):
+                if nclusters.samecluster(clu, clu2):
                     found = True
-                    if debug:
-                        print('Clusters are similair! Before popping lenght =', len(self.nclusters))
-                        # self.show_mdkas(ind1)
-                        # self.show_mdkas(ind2)
-
-                    # Cluster to be deleted can contain matches, which original cluster don't have
-                    self.copy_extra_matches(clu, clu2)
-                    self.nclusters.pop(ind2)
-                    if debug:
-                        print('After popping lenght =', len(self.nclusters))
-
+                    self.copy_extra_matches(clu, clu2)            # Cluster to be deleted can contain matches,
+                    self.nclusters.pop(ind2)                      # which original cluster don't have
                     ind2 += 1
                     return True
                 else:
-                    if debug:
-                        print('Clusters were different.\n')
                     ind2 += 1
             ind1 += 1
         if found:
@@ -262,20 +237,17 @@ class nclusters:
     def split_cluster(self, clu_original_p, clu_check_p):
         # Add matches to new cluster. And new cluster to clusters list.
         # FIXME: Test, if this split cluster works.
-
         new_clu = mclusters()
-
         for m in clu_check_p:
             for m2 in clu_original_p:
                 if m != m2:
                     new_clu.append(m)
-
         if len(new_clu) < 1:
             return None
         else:
             return new_clu
 
-    def split_clusters(self, debug=False):
+    def split_clusters(self):
         """
         :param debug:
             Debug mode, prints more information processing data.
@@ -298,21 +270,15 @@ class nclusters:
         One method is to take one tested and compare it's matches to all other tested. If all tested have same
         GD values to all cluster matches, split is saturated. If not, there is something to split
         """
-        
-        if(debug):
-            print('Nclusters to_be_splitted()')
 
         found = False
         ind1 = 0
         for clu in self.nclusters:
             ind2 = ind1 + 1
             for clu2 in self.nclusters[(ind1+1):]:                # Compare first iterable with next to end of list
-                if debug:
-                    print('O =', ind1, ', I =', ind2)
-                    print(clu, '\n', clu2)
                 # Test if the two cluster have matches which have different GD-value than others.
                 # So, they belongs to other new cluster
-                if compare_cluster_pair(clu, clu2, True):
+                if compare_cluster_pair(clu, clu2):
                     return True
         return False
 
@@ -370,8 +336,14 @@ class nclusters:
             self.nclusters = json.load(f)
 
     def write(self, fname_p='mt-dna.json'):
-        # Use Json to save network
-        # https://stackoverflow.com/questions/27745500/how-to-save-a-list-to-a-file-and-read-it-as-a-list-type
+        """
+        :param fname_p:
+        :return:
+        """
+        """ Use Json to save network
+        U{https://stackoverflow.com/questions/27745500/how-to-save-a-list-to-a-file-and-read-it-as-a-list-type}
+        """
+
         with open(fname_p, 'w') as f:
             # indent=2 is not needed but makes the file human-readable
             json.dump(self.nclusters, f, indent=2)
@@ -421,7 +393,7 @@ class nclusters:
 
 
 # @staticmethod
-# def samematch(m1_p, m2_p, debug1=False):
+# def samematch(m1_p, m2_p):
 #     for m1 in m1_p:
 #         for m2 in m2_p:
 #             if m1_p[1] == m2_p[1]:
@@ -431,7 +403,7 @@ class nclusters:
 #     return False
 
 
-def compare_cluster_pair(clu1_p, clu2_p, debug=False):
+def compare_cluster_pair(clu1_p, clu2_p):
     # TODO: Add code to compare if two clusters are GD uniform or not.
     #  If they are not, move extra matches to new cluster
     return False
