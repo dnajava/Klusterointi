@@ -18,6 +18,7 @@ from kit import kit
 import nclusters
 
 if __name__ == '__main__':
+
     kits = []                                           # This is list of kits. First empty.
     kits_to_list = kit.read_kits()                      # Read information of kits from kits.csv.
 
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     # netclusters.write('U8a1a1b1_unduplicated.json')
 
     sint = 0
-    while netclusters.split_clusters(True):             # Then split non GD uniform clusters
+    while netclusters.split_clusters():                 # Then split non GD uniform clusters
         sint += 1
     if sint:
         print('Splitted', sint, ' clusters.')
