@@ -20,9 +20,9 @@ from cnetwork import nclusters
 if __name__ == '__main__':
 
     kits = []                                           # This is list of kits. First empty.
-    kits_to_list = kit.read_kits()                      # Read information of kits from kits.csv.
+    kitlist = kit.read_kits()                           # Read information of kits from kits.csv.
 
-    for k in kits_to_list:
+    for k in kitlist:
         new_kit = kit(k[0], k[1], k[2])                 # Create kit which have information and clustered matches.
         kits.append(new_kit)                            # Add to list.
 
@@ -51,4 +51,4 @@ if __name__ == '__main__':
     # n.show_mdkas()                                    # Print all clusters (MDKAs)
     # n.mk_txt(1)                                       # Print one cluster (MDKAs)
     # n.mk_xml()                                        # Print in XML form
-    # n.write_gephi_sources()                           # Write nodes.csv and links.csv to Gephi
+    # n.gephi()                                         # Write nodes.csv and links.csv to Gephi
