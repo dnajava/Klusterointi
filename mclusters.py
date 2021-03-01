@@ -38,6 +38,8 @@ class mclusters:
         if 0 < level < 3:
             if self.gd[level] != None:
                 return self.gd[level]
+        else:
+            print('Worng GD-level', level)
 
 
     def read_kit_clusters(self, fname_p, pname_p):
@@ -64,11 +66,4 @@ class mclusters:
                 read_obj.close()
 
         for x in matches:
-            if x[0] == '0':
-                self.gd0.append(x)
-            if x[0] == '1':
-                self.gd1.append(x)
-            if x[0] == '2':
-                self.gd2.append(x)
-            if x[0] == '3':
-                self.gd3.append(x)
+            self.gds[int(x[0])].append(x)                           # Add matches in different GD-level
