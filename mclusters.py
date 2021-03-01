@@ -34,19 +34,11 @@ class mclusters:
                 print('')
         print('')
 
-    def get_cluster(self, level=0):
-        if level == 0:
-            if self.gd0 != None:
-                return self.gd0
-        if level == 1:
-            if self.gd1 != None:
-                return self.gd1
-        if level == 2:
-            if self.gd2 != None:
-                return self.gd2
-        if level == 3:
-            if self.gd3 != None:
-                return self.gd3
+    def get_cluster(self, level=0) -> list:
+        if 0 < level < 3:
+            if self.gd[level] != None:
+                return self.gd[level]
+
 
     def read_kit_clusters(self, fname_p, pname_p):
         ind = 0
