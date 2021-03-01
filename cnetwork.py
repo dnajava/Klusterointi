@@ -368,7 +368,7 @@ class nclusters:
             # indent=2 is not needed but makes the file human-readable
             json.dump(self.nclusters, f, indent=2)
 
-    def write_gephi_sources(self):
+    def gephi(self):
         # Write nodes.csv and links.csv
         # TODO: Add links between clusters.
 
