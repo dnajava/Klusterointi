@@ -66,4 +66,4 @@ class mclusters:
                 read_obj.close()
 
         for x in matches:
-            self.gds[int(x[0])].append(x)                           # Add matches in different GD-level
+            self.gds[int(x[0])].append(x)                           # Add matches in different GD-levels
