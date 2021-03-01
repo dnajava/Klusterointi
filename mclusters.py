@@ -7,7 +7,7 @@ class mclusters:
     haplogroup = ''                                 # Haplogroup of samples
     name = ''                                       # Name of subroup. A cluster of haplogroup.
     gdmax = 4                                       # FTDNA lists only GD 0 - 3 matches
-    gd0, gd1, gd2, gd3 = [],[],[],[]
+    gd0, gd1, gd2, gd3 = [], [], [], []
     gds = [gd0, gd1, gd2, gd3]
 
     def __init__(self, haplogroup_p=''):
@@ -15,6 +15,9 @@ class mclusters:
             haplogroup = haplogroup_p
 
     def __init__(self,haplogroup_p='', name_p='', fname_p=''):
+        """
+        :type fname_p: str
+        """
         self.haploroup = haplogroup_p
         self.name = name_p
         self.fname = fname_p
