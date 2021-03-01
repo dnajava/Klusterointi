@@ -1,3 +1,5 @@
+ 1 Mar 2021 Nclusters.py changed to Cnetwork.py
+28 Feb 2021 Reads all GD matches even if one kit. And some other bugs fixed.
 22 Feb 2021 If duplicate cluster has extra matches, they are copied before duplicate deletion.
 21 Feb 2021 Mutation network save to file and retrieve from file.
 20 Feb 2021 Removes duplicate clusters. (May have bugs)
