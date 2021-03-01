@@ -14,4 +14,5 @@ you can do beautiful graphs of GD network. You can also print MDKA:s as txt and 
 
 TODO:
 
-- Split the cluster, if it contains matches which have other matches than common matches in that cluster
+- Split the cluster, if it contains matches which have other matches than common matches in that cluster.
+- New method to add match clusters of kits to cluster network. First kits GD 0 clusters and then GD 1 clusters.
