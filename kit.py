@@ -1,5 +1,7 @@
-# Kit contains kit id and name of tested person and match list date
-# Maybe some day the parameters are in csv-file
+"""
+Kit contains kit id and name of tested person and match list date
+Maybe some day the parameters are in csv-file
+"""
 
 from csv import reader
 from datetime import date
@@ -8,7 +10,7 @@ import mclusters
 class kit:
     id = ''                                                                               # Kit id in FTDNA
     name = ''                                                                             # Kit's owner real name
-    dl_directory = '/home/user/Downloads/'
+    dl_directory = '/home/ilpo/Lataukset/'
     kfname = 'kits.csv'
     file = ''                                                                             # Matchlist filename
     mclu = None
@@ -33,15 +35,21 @@ class kit:
         self.mk_mclu(self.name, self.file)
 
     def mk_mclu(self, file_p, name_p):
+        # FIXME: Here possible a bug. If only one kit, it reads only first cluster of it.
         mclu = mclusters.mclusters(self.name, self.file)
         self.file = self.dl_directory + self.id + '_mtDNA_Matches_' + self.date + '.csv'
         self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_clusters(self.file, self.name)  # Read kit's mt-dna matches
+        self.mclu.read_kit_clusters(self.file, self.name)  # Read kit's mt-dna matches
 
-    def read_kits():
+    def read_kits(fname_p = '') -> list:
         tempkits = []
+        filename = 'kits.csv'
+
+        if fname_p != '':
+            filename = fname_p
+
         try:
-            with open('kits.csv', 'r') as read_obj:
+            with open(filename, 'r') as read_obj:
                 csv_reader = reader(read_obj)
                 for k in csv_reader:
                         k[1] = k[1].strip() + ' '               # One space after name like match names have
@@ -52,7 +60,6 @@ class kit:
         finally:
             if  read_obj is not None:
                 read_obj.close()
-
         return tempkits
 
     def getname(self):
