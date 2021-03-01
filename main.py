@@ -11,11 +11,11 @@ If you think you know better methods to do something, feel free to contact and t
 Input to this program are downloaded mt-dna match lists from FTDNA. Output are nodes.csv and links.csv. With Gephi
 you can do beautiful graphs of GD network.
 
-Version 0.2.0.
+Version 0.2.1.
 """
 
 from kit import kit
-import nclusters
+from cnetwork import nclusters
 
 if __name__ == '__main__':
 
@@ -26,31 +26,29 @@ if __name__ == '__main__':
         new_kit = kit(k[0], k[1], k[2])                 # Create kit which have information and clustered matches.
         kits.append(new_kit)                            # Add to list.
 
-    netclusters = nclusters.nclusters()
+    n = nclusters()
     for k in kits:                                      # Add every kits every GD clusters to netclusters
-        for i in range(0, len(kits)+1):
-            if(k.mclu.gd[i] != None):
-                netclusters.add(k.mclu.get_cluster(i))
+        for z in k.mclu.gds:
+            n.add(z)
 
-    # netclusters.write('U8a1a1b1_duplicated.json')
+    # n.write('U8a1a1b1_duplicated.json')
 
     dint = 0
-    while netclusters.delete_duplicates():              # First delete duplicates
+    while n.delete_duplicates():                        # First delete duplicates
         dint += 1
     if dint:
         print('Removed', dint, 'duplicate clusters.')
 
-    # netclusters.write('U8a1a1b1_unduplicated.json')
+    # n.write('U8a1a1b1_unduplicated.json')
 
     sint = 0
-    while netclusters.split_clusters():                 # Then split non GD uniform clusters
+    while n.split_clusters():                           # Then split non GD uniform clusters
         sint += 1
     if sint:
         print('Splitted', sint, ' clusters.')
 
-    # netclusters.write('U8a1a1b1_splitted.json')
-    # netclusters.show_mdkas()                          # Print all clusters (MDKAs)
-    # netclusters.mk_txt(1)                             # Print one cluster (MDKAs)
-    # netclusters.mk_xml()                              # Print in XML form
-    # netclusters.write_gephi_sources()                   # Write nodes.csv and links.csv to Gephi
-
+    # n.write('U8a1a1b1_splitted.json')
+    # n.show_mdkas()                                    # Print all clusters (MDKAs)
+    # n.mk_txt(1)                                       # Print one cluster (MDKAs)
+    # n.mk_xml()                                        # Print in XML form
+    # n.write_gephi_sources()                           # Write nodes.csv and links.csv to Gephi
