@@ -39,7 +39,7 @@ class mclusters:
             if self.gd[level] != None:
                 return self.gd[level]
         else:
-            print('Worng GD-level', level)
+            print('Wrong GD-level', level)
 
 
     def read_kit_clusters(self, fname_p, pname_p):
