@@ -4,7 +4,7 @@ Match Clusters of one Kit (tested person)
 from csv import reader
 
 class mclusters:
-    haplogroup = ''                                 # Haplogroup of samples
+    haplogroup = ''                                 # Haplogroup identifier of samples
     name = ''                                       # Name of subroup. A cluster of haplogroup.
     gdmax = 4                                       # FTDNA lists only GD 0 - 3 matches
     gd0, gd1, gd2, gd3 = [], [], [], []
