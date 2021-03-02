@@ -11,18 +11,27 @@ class mclusters:
     gds = [gd0, gd1, gd2, gd3]
 
     def __init__(self, haplogroup_p=''):
-        if haplogourp_p != '':
+        """
+        :type haplogroup_p: str
+        """
+        if haplogroup_p != '':
             haplogroup = haplogroup_p
 
-    def __init__(self,haplogroup_p='', name_p='', fname_p=''):
+    def __init__(self, haplogroup_p='', name_p='', fname_p=''):
         """
+        :type haplogroup_p: str
+        :type name_p: str
         :type fname_p: str
         """
         self.haploroup = haplogroup_p
         self.name = name_p
         self.fname = fname_p
 
-    def show(self, debug2_p = False, debug3_p = False):
+    def show(self, debug2_p=False, debug3_p=False):
+        """
+        :type debug2_p: bool
+        :type debug3_p: bool
+        """
         i = 0
         for y in self.gds:
             if debug2_p:
@@ -35,6 +44,9 @@ class mclusters:
         print('')
 
     def get_cluster(self, level=0) -> list:
+        """
+        :type level: int
+        """
         if 0 <= level < self.gdmax-1:
             if self.gd[level] != None:
                 return self.gd[level]
@@ -42,6 +54,10 @@ class mclusters:
             print('Wrong GD-level', level)
 
     def read_kit_clusters(self, fname_p, pname_p):
+        """
+        :type fname_p: str
+        :type pname_p: str
+        """
         ind = 0
         matches = []
         read_obj = None
