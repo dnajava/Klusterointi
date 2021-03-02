@@ -35,12 +35,11 @@ class mclusters:
         print('')
 
     def get_cluster(self, level=0) -> list:
-        if 0 < level < gdmax-1:
+        if 0 <= level < gdmax-1:
             if self.gd[level] != None:
                 return self.gd[level]
         else:
             print('Wrong GD-level', level)
-
 
     def read_kit_clusters(self, fname_p, pname_p):
         ind = 0
