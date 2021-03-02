@@ -35,7 +35,7 @@ class mclusters:
         print('')
 
     def get_cluster(self, level=0) -> list:
-        if 0 <= level < gdmax-1:
+        if 0 <= level < self.gdmax-1:
             if self.gd[level] != None:
                 return self.gd[level]
         else:
