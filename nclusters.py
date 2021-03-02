@@ -65,12 +65,11 @@ class nclusters:
                 i += 1
 
     def show_mdkas(self, cluster_p=None):
-        known, unknown = 0, 0
         i = 0
-        # FIXME: Known and unknown problem. Is that individual match or total all matches?
-
         if cluster_p == None:
             for clu in self.nclusters:
+                unknown = 0
+                known = 0
                 print('\nCluster', i+1)
                 for match in clu:
                     if match[6] == '':
@@ -87,6 +86,8 @@ class nclusters:
         else:
             for clu in self.nclusters:
                 if i == cluster_p:
+                    unknown = 0
+                    known = 0
                     print('\nCluster', i+1)
                     for match in clu:
                         if match[6] == '':
@@ -101,7 +102,6 @@ class nclusters:
                 print(unknown, 'unknown MDKAs')
 
     def amount_unknown_mdkas(self, cluster_p=None):
-        unknown = 0
         i = 0
         if cluster_p == None:
             for clu in self.nclusters:
@@ -257,7 +257,7 @@ class nclusters:
     def split_cluster(self, clu_original_p, clu_check_p):
         # Add matches to new cluster. And new cluster to clusters list.
         # FIXME: Test, if this split cluster works.
-        new_clu = self.mclusters()
+        new_clu = mclusters()
         for m in clu_check_p:
             for m2 in clu_original_p:
                 if m != m2:
@@ -269,7 +269,9 @@ class nclusters:
 
     def split_clusters(self):
         """
-        :return: bool
+        :param debug:
+            Debug mode, prints more information processing data.
+        :return:
             If there occurred a split, return True.
 
         This is maybe most complicated in nclusters and in wholw program.
@@ -325,7 +327,7 @@ class nclusters:
             for x2 in x:
                 clu += x2
             sheet += clu
-        # pyexel_ods3.save_data(fname_p, sheet)
+        ods_save.save_data(fname_p, sheet)
 
     def mk_xml(self):
         """
@@ -366,7 +368,7 @@ class nclusters:
             # indent=2 is not needed but makes the file human-readable
             json.dump(self.nclusters, f, indent=2)
 
-    def gephi(self):
+    def write_gephi_sources(self):
         # Write nodes.csv and links.csv
         # TODO: Add links between clusters.
 
@@ -408,6 +410,18 @@ class nclusters:
         linksfile.close()
 
 # END of nclusters
+
+
+# @staticmethod
+# def samematch(m1_p, m2_p):
+#     for m1 in m1_p:
+#         for m2 in m2_p:
+#             if m1_p[1] == m2_p[1]:
+#                 if debug1 == True:
+#                     print('Same match: ', m1_p[1], ' ', m2_p[2], ' !!')
+#                 return True
+#     return False
+
 
 def compare_cluster_pair(clu1_p, clu2_p):
     # TODO: Add code to compare if two clusters are GD uniform or not.

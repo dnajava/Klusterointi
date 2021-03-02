@@ -1,3 +1,4 @@
+ 2 Mar 2021 Fixed minor bugs or typos.
  1 Mar 2021 Nclusters.py changed to Cnetwork.py
 28 Feb 2021 Reads all GD matches even if one kit. And some other bugs fixed.
 22 Feb 2021 If duplicate cluster has extra matches, they are copied before duplicate deletion.

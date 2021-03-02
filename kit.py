@@ -4,7 +4,6 @@ Maybe some day the parameters are in csv-file
 """
 
 from csv import reader
-from datetime import date
 import mclusters
 
 class kit:
@@ -42,6 +41,10 @@ class kit:
         self.mclu.read_kit_clusters(self.file, self.name)  # Read kit's mt-dna matches
 
     def read_kits(fname_p = '') -> list:
+        """
+        :type fname_p: str
+        :return: list
+        """
         tempkits = []
         filename = 'kits.csv'
 

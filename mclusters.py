@@ -46,10 +46,11 @@ class mclusters:
     def get_cluster(self, level=0) -> list:
         """
         :type level: int
+        :return: list
         """
         if 0 <= level < self.gdmax-1:
-            if self.gd[level] != None:
-                return self.gd[level]
+            if self.gds[level] != None:
+                return self.gds[level]
         else:
             print('Wrong GD-level', level)
 
