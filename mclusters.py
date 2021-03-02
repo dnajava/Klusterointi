@@ -9,6 +9,7 @@ class mclusters:
     gdmax = 4                                       # FTDNA lists only GD 0 - 3 matches
     gd0, gd1, gd2, gd3 = [], [], [], []
     gds = [gd0, gd1, gd2, gd3]
+    links = []                                      # Links to other clusters
 
     def __init__(self, haplogroup_p=''):
         """
@@ -16,6 +17,7 @@ class mclusters:
         """
         if haplogroup_p != '':
             haplogroup = haplogroup_p
+        self.links = None
 
     def __init__(self, haplogroup_p='', name_p='', fname_p=''):
         """
@@ -26,6 +28,7 @@ class mclusters:
         self.haploroup = haplogroup_p
         self.name = name_p
         self.fname = fname_p
+        self.links = None
 
     def show(self, debug2_p=False, debug3_p=False):
         """
@@ -83,3 +86,8 @@ class mclusters:
 
         for x in matches:
             self.gds[int(x[0])].append(x)                           # Add matches in different GD-levels
+
+    def add_link(self, clu_p):
+        self.links.append(clu_p)                                        # Add a bidirectionally linked
+        clu_p.links.append(self)                                        # -"-
+
