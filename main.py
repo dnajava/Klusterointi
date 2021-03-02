@@ -14,41 +14,56 @@ you can do beautiful graphs of GD network.
 Version 0.2.1.
 """
 
+import os.path
+from os import path
 from kit import kit
 from cnetwork import nclusters
 
 if __name__ == '__main__':
 
-    kits = []                                           # This is list of kits. First empty.
-    kits_to_list = kit.read_kits()                      # Read information of kits from kits.csv.
-
-    for k in kits_to_list:
-        new_kit = kit(k[0], k[1], k[2])                 # Create kit which have information and clustered matches.
-        kits.append(new_kit)                            # Add to list.
-
+    hg: str = 'U8a1a1b1'
+    fname: str = hg + '.json'
     n = nclusters()
-    for k in kits:                                      # Add every kits every GD clusters to netclusters
-        for z in k.mclu.gds:
-            n.add(z)
 
-    # n.write('U8a1a1b1_duplicated.json')
+    if path.isfile(fname):
+        print('There is already a network of haploroup', hg , 'clusters. Reading.')
+        n.read(fname)
+    else:
+        print('Reading', hg, 'kits.')
 
-    dint = 0
-    while n.delete_duplicates():                        # First delete duplicates
-        dint += 1
-    if dint:
-        print('Removed', dint, 'duplicate clusters.')
+        kits = []                                           # This is list of kits. First empty.
+        kits_to_list = kit.read_kits()                      # Read information of kits from kits.csv.
 
-    # n.write('U8a1a1b1_unduplicated.json')
+        for k in kits_to_list:
+            new_kit = kit(k[0], k[1], k[2])                 # Create kit which have information and clustered matches.
+            kits.append(new_kit)                            # Add to list.
 
-    sint = 0
-    while n.split_clusters():                           # Then split non GD uniform clusters
-        sint += 1
-    if sint:
-        print('Splitted', sint, ' clusters.')
+        for k in kits:                                      # Add every kits every GD clusters to netclusters
+            for z in k.mclu.gds:
+                n.add(z)
 
-    # n.write('U8a1a1b1_splitted.json')
+        dint = 0
+        while n.delete_duplicates():                        # First delete duplicates
+            dint += 1
+        if dint:
+            print('Removed', dint, 'duplicate clusters.')
+
+        # n.write('U8a1a1b1_unduplicated.json')
+
+        sint = 0
+        while n.split_clusters():                           # Then split non GD uniform clusters
+            sint += 1
+        if sint:
+            print('Splitted', sint, ' clusters.')
+
+
+    # Do something to network ###########
+
     # n.show_mdkas()                                    # Print all clusters (MDKAs)
     # n.mk_txt(1)                                       # Print one cluster (MDKAs)
     # n.mk_xml()                                        # Print in XML form
     # n.gephi()                                         # Write nodes.csv and links.csv to Gephi
+
+
+    # ###################################
+    n.write(fname)
