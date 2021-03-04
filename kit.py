@@ -20,7 +20,7 @@ class kit:
         self.date = day_p
         self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
         self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_clusters(self.file)                                                # Read kit's mt-dna matches
+        self.mclu.read_kit_clusters(self.file, self.name, self.id)                        # Read kit's mt-dna matches
 
     def __init__(self, id_p, name_p, day_p):
         self.id = id_p
@@ -33,12 +33,12 @@ class kit:
         self.name = name_p
         self.mk_mclu(self.name, self.file)
 
-    def mk_mclu(self, file_p, name_p):
+    def mk_mclu(self, file_p, name_p, id_p=None):
         # FIXME: Here possible a bug. If only one kit, it reads only first cluster of it.
-        mclu = mclusters.mclusters(self.name, self.file)
+        mclu = mclusters.mclusters(self.id, self.name, self.file, self.id)
         self.file = self.dl_directory + self.id + '_mtDNA_Matches_' + self.date + '.csv'
         self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_kit_clusters(self.file, self.name)  # Read kit's mt-dna matches
+        self.mclu.read_kit_clusters(self.file, self.name, self.id)  # Read kit's mt-dna matches
 
     def read_kits(fname_p = '') -> list:
         """
@@ -61,7 +61,7 @@ class kit:
             print(err)
             return []
         finally:
-            if  read_obj is not None:
+            if read_obj is not None:
                 read_obj.close()
         return tempkits
 
@@ -81,3 +81,4 @@ class kit:
                     print('This kit has no mt-dna matches.')
         else:
             print('Program has read information of one kit.')
+

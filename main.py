@@ -19,8 +19,33 @@ from os import path
 from kit import kit
 from cnetwork import nclusters
 
-if __name__ == '__main__':
+def menu():
+    command = '9'
+    while command[0] != '0':
+        print('1. Show GD network')
+        print('2. Make nodes.csv and links.csv to Gephi?')
+        print('3. Print clusters')
+        print('4. Clusters to XML')
+        print('5. Clusters to spreadsheet')
+        print('6. Show MDKAs')
+        print('0. Exit\n\n')
+        command = input('Your choice:')
 
+        if command[0] == '1':
+            n.show()
+        if command[0] == '2':
+            n.gephi()
+        if command[0] == '3':
+            n.show()
+        if command[0] == '4':
+            n.mk_xml()
+        if command[0] == '5':
+            print('Not working yet')
+        if command[0] == '6':
+            n.show_mdkas()
+
+
+if __name__ == '__main__':
     hg: str = 'U8a1a1b1'
     fname: str = hg + '.json'
     n = nclusters()
@@ -57,13 +82,12 @@ if __name__ == '__main__':
             print('Splitted', sint, ' clusters.')
 
 
-    # Do something to network ###########
+    menu()
 
-    # n.show_mdkas()                                    # Print all clusters (MDKAs)
+n.write(fname)
+
     # n.mk_txt(1)                                       # Print one cluster (MDKAs)
     # n.mk_xml()                                        # Print in XML form
     # n.gephi()                                         # Write nodes.csv and links.csv to Gephi
 
-
     # ###################################
-    n.write(fname)

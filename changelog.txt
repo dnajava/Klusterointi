@@ -1,3 +1,4 @@
+ 4 Mar 2021 Added kit id to match tuple. See DataFormats.txt.
  2 Mar 2021 Fixed minor bugs or typos.
  1 Mar 2021 Nclusters.py changed to Cnetwork.py
 28 Feb 2021 Reads all GD matches even if one kit. And some other bugs fixed.
