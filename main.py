@@ -14,7 +14,6 @@ you can do beautiful graphs of GD network.
 Version 0.2.1.
 """
 
-import os.path
 from os import path
 from kit import kit
 from cnetwork import nclusters
@@ -60,7 +59,7 @@ if __name__ == '__main__':
         kits_to_list = kit.read_kits()                      # Read information of kits from kits.csv.
 
         for k in kits_to_list:
-            new_kit = kit(k[0], k[1], k[2])                 # Create kit which have information and clustered matches.
+            new_kit = kit(k[0], k[1], k[2], hg)                 # Create kit which have information and clustered matches.
             kits.append(new_kit)                            # Add to list.
 
         for k in kits:                                      # Add every kits every GD clusters to netclusters

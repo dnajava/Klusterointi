@@ -4,41 +4,28 @@ Maybe some day the parameters are in csv-file
 """
 
 from csv import reader
-import mclusters
+from mclusters import mcluster
 
 class kit:
     id = ''                                                                               # Kit id in FTDNA
     name = ''                                                                             # Kit's owner real name
+    haplogroup = ''
+#    date = None
     dl_directory = '/home/ilpo/Lataukset/'
     kfname = 'kits.csv'
     file = ''                                                                             # Matchlist filename
     mclu = None
 
-    def __init__(self, id_p, name_p, day_p):
-        self.id = id_p
-        self.name = name_p                                                                # Kit owners real name
-        self.date = day_p
-        self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
-        self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_kit_clusters(self.file, self.name, self.id)                        # Read kit's mt-dna matches
-
-    def __init__(self, id_p, name_p, day_p):
-        self.id = id_p
-        self.name = name_p  # Kit owners real name
-        self.date = day_p
-        self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
-        # self.date = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
-        self.date = day_p
+    def __init__(self, id_p, name_p, day_p, haplogroup_p):
         self.id = id_p
         self.name = name_p
-        self.mk_mclu(self.name, self.file)
-
-    def mk_mclu(self, file_p, name_p, id_p=None):
-        # FIXME: Here possible a bug. If only one kit, it reads only first cluster of it.
-        mclu = mclusters.mclusters(self.id, self.name, self.file, self.id)
-        self.file = self.dl_directory + self.id + '_mtDNA_Matches_' + self.date + '.csv'
-        self.mclu = mclusters.mclusters(self.name, self.file)
-        self.mclu.read_kit_clusters(self.file, self.name, self.id)  # Read kit's mt-dna matches
+        self.date = None
+        self.haplogroup = haplogroup_p
+        # self.date = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
+        self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
+        self.mclu = mcluster(self.id, self.haplogroup, self.name)
+        self.mclu.gds = self.mclu.read_kit_clusters(self.file, self.id, self.name)
+#        print('CLUSTERS',self.mclu)
 
     def read_kits(fname_p = '') -> list:
         """
@@ -63,6 +50,7 @@ class kit:
         finally:
             if read_obj is not None:
                 read_obj.close()
+
         return tempkits
 
     def getname(self):
@@ -72,13 +60,16 @@ class kit:
         return self.file
 
     def show(self, debug1_p=False, debug2_p=False, debug3_p=False):
+        print('##### Kit', self.id, '#####', self.name, '#####')  # Show only minimal information:
         if debug1_p != False:
-            print('##### Kit', self.id, '#####', self.name, '#####')           # Show only minimal information:
             if debug2_p != False:                                              # Kit id and name.
                 if self.mclu != None:                                          # If there are matches.
                         self.mclu.show(debug2_p,debug3_p)                      # dbg2: print clusters and amount.
                 else:                                                          # dbg3: print match names too.
                     print('This kit has no mt-dna matches.')
-        else:
-            print('Program has read information of one kit.')
+            if self.mclu != None:
+                print('### KIT SHOW #####')
+                print(self.mclu)
+            else:
+                print('No clusters data.')
 

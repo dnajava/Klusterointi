@@ -31,7 +31,14 @@ class nclusters:
         print('Net clusters:')
         i = 0
         for a in self.nclusters:
-            print('Cluster', i, ' ', end='')
+            if i < 10:
+                print('Cluster ', i, '\t', end=''),
+            else:
+                print('Cluster', i, '\t', end=''),
+            if len(a) < 10:
+                print('  ', len(a), '\t',  end='')
+            else:
+                print(' ', len(a), '\t',  end='')
             print(a, end='')
             print(' ')
             i += 1
@@ -300,6 +307,26 @@ class nclusters:
                     return True
         return False
 
+    def search_match(self, cluster1_p, cluster2_p, mname_p) -> bool:
+        """
+            If mname_p is in cluster_p return True, otherwise False.
+        :param cluster_p:
+            Cluster1 where to search
+        :param cluster_p:
+            Cluster2 where to search
+        :param mname_p:
+            Search match name
+        :return: bool
+            True if mname_p is in cluster_p.
+        """
+        for c in self.nclusters:
+            for m in c:
+                if m[1] == mname_p:
+                    return True
+        return False
+
+
+
 # === Output Clusters to other format
 
     def mk_spreadsheet(self, fname_p='spreadsheet.ods'):
@@ -414,3 +441,7 @@ def compare_cluster_pair(clu1_p, clu2_p):
     #  If they are not, move extra matches to new cluster
     return False
 
+def add_links(clu1_p, clu2_p, dist):
+    if clu2_p not in clu1_p.links[0]:                               # Is there already a link
+        clu1_p.links.add(tuple(clu2_p,dist))
+        clu2_p.links.add(tuple(clu1_p,dist))
