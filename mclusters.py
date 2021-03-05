@@ -64,9 +64,9 @@ class mcluster:
         matches = []
         read_obj = None
 
-        self.gds[0].append(((kit_id_p, '0'), (pname_p,'','','','','','','')))    # Matchlist doesn't contain kits owner. Add him/her.
-
         new_mcluster = mcluster(kit_id_p, '', pname_p)
+        new_mcluster.gds[0].append(((kit_id_p, '0'), (pname_p,'','','','','','','')))    # Matchlist doesn't contain kits owner. Add him/her.
+
         try:
             with open(fname_p, 'r') as read_obj:
                 csv_reader = reader(read_obj)
