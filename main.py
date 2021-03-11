@@ -17,6 +17,7 @@ Version 0.2.1.
 from os import path
 from kit import kit
 from cnetwork import nclusters
+from mtsettings import HAPLOGROUP
 
 def menu():
     command = '9'
@@ -45,12 +46,11 @@ def menu():
 
 
 if __name__ == '__main__':
-    hg: str = 'U8a1a1b1'
-    fname: str = hg + '.json'
+    fname: str = HAPLOGROUP + '.json'
     n = nclusters()
 
     if path.isfile(fname):
-        print('There is already a network of haploroup', hg , 'clusters. Reading.')
+        print('There is already a network of haploroup', HAPLOGROUP, 'clusters. Reading.')
         n.read(fname)
     else:
         print('Reading', hg, 'kits.')
