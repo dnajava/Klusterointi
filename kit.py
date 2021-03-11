@@ -5,14 +5,13 @@ Maybe some day the parameters are in csv-file
 
 from csv import reader
 from mclusters import mcluster
+from mtsettings import DLDIR
+from mtsettings import KITSFILE
 
 class kit:
     id = ''                                                                               # Kit id in FTDNA
     name = ''                                                                             # Kit's owner real name
     haplogroup = ''
-#    date = None
-    dl_directory = '/home/ilpo/Lataukset/'
-    kfname = 'kits.csv'
     file = ''                                                                             # Matchlist filename
     mclu = None
 
@@ -22,7 +21,7 @@ class kit:
         self.date = None
         self.haplogroup = haplogroup_p
         # self.date = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
-        self.file = self.dl_directory + id_p + '_mtDNA_Matches_' + day_p + '.csv'
+        self.file = DLDIR + id_p + '_mtDNA_Matches_' + day_p + '.csv'
         self.mclu = mcluster(self.id, self.haplogroup, self.name)
         self.mclu.gds = self.mclu.read_kit_clusters(self.file, self.id, self.name)
 #        print('CLUSTERS',self.mclu)
@@ -33,7 +32,7 @@ class kit:
         :return: list
         """
         tempkits = []
-        filename = 'kits.csv'
+        filename = KITSFILE
 
         if fname_p != '':
             filename = fname_p
