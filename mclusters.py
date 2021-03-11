@@ -4,14 +4,14 @@ Match Clusters of one Kit (tested person)
 from csv import reader
 from gds import gds
 # from mclusters import mclusters
+from links import link
+from mtsettings import GDMAX
 
 class mcluster:
-    # kitcluster = False                              # Is this GD 0 cluster to a kit?
     kit_id = None
     haplogroup = ''                                 # Haplogroup identifier of samples
     name = ''                                       # Name of subroup. A cluster of haplogroup.
-    gdmax = 4                                       # FTDNA lists only GD 0 - 3 matches
-#    links = []                                      # List of tuples: links to other clusters with GD distance
+    links = []                                      # List of tuples: links to other clusters with GD distance
 
 
     def __init__(self, kit_id_p, haplogroup_p, name_p):
@@ -43,12 +43,17 @@ class mcluster:
                 print('')
         print('')
 
+    def show_links(self):
+        i = 0
+        for v in self.links:
+            pdinr(v)
+
     def get_cluster(self, level=0) -> list:
         """
         :type level: int
         :return: list
         """
-        if 0 <= level < self.gdmax-1:
+        if 0 <= level < GDMAX-1:
             if self.gds[level] != None:
                 return self.gds[level]
         else:
@@ -87,15 +92,27 @@ class mcluster:
         return new_mcluster.gds
 
 
-    def add_link(self, clu_p, gd_diff):
+    def add_link(self, clu_p, gd_dest):
         """
         Adds link to clu_p with GD distance. It's a tuple.
         :param clu_p:
-        :param gd_diff:
+        :param gd_dest:
 #        :return:
         """
-#        self.links.append(tuple(clu_p, gd_diff))                        # Add a bidirectionally linked
-#        clu_p.links.append(fuple(self, gd_diff))                        # -"-
+#        self.links.append(tuple(clu_p, gd_dest))                        # Add a bidirectionally linked
+#        clu_p.links.append(fuple(gd_dest, clu_p))                       # -"-
+
+    def add_default_links(self, kitclu_p, ind_p):
+        self.links = []
+        for i in range(1, 3):
+            self.links.append(link(ind_p,ind_p+i,i))
+
+    def show_links(self):
+        print('Mclusters show_links')
+        if self.links != []:
+            for i in self.nclusters[i].links:
+                print('Clusters GD', i, 'link', self.links[i])
+
 
 # Non member methods / functions
 
