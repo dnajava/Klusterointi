@@ -1,3 +1,5 @@
+11 Mar 2021 Added mtsettings.py where global settings
+ 4 Mar 2021 Fixed object reference bug.
  4 Mar 2021 Added kit id to match tuple. See DataFormats.txt.
  2 Mar 2021 Fixed minor bugs or typos.
  1 Mar 2021 Nclusters.py changed to Cnetwork.py
