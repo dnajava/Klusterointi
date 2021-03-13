@@ -4,27 +4,58 @@ Maybe some day the parameters are in csv-file
 """
 
 from csv import reader
-from mclusters import mcluster
 from mtsettings import DLDIR
 from mtsettings import KITSFILE
+from mclusters import Basematch
 
-class kit:
-    id = ''                                                                               # Kit id in FTDNA
-    name = ''                                                                             # Kit's owner real name
-    haplogroup = ''
-    file = ''                                                                             # Matchlist filename
-    mclu = None
+class Kit:
+    def show_gds(gds_p):
+        for a in gds_p:
+            for b in a:
+                b.show()
 
-    def __init__(self, id_p, name_p, day_p, haplogroup_p):
-        self.id = id_p
-        self.name = name_p
+    def read_kit_clusters(self, kit_id_p: str, pname_p: str, fname_p: str) -> list:
+        ind = 0
+        tmp_gds = [[], [], [], []]
+
+        try:
+            with open(fname_p, 'r') as read_obj:
+                csv_reader = reader(read_obj)
+                for m in csv_reader:
+                    if ind == 0:
+                        new_match = Basematch(kit_id_p, 0, pname_p, '', '', '', '', '')  # bogus match, we don't know
+                        self.gds[0].append(new_match)
+                    else:
+                        # DataFormats.txt     kit       gd         fun   fin   min   lam   email mdka
+                        new_match = Basematch(kit_id_p, int(m[0]), m[1], m[2], m[3], m[4], m[5], m[6])
+                        tmp_gds[new_match.gd].append(new_match)
+                    ind += 1
+        except (IOError, OSError) as err:
+            print(err)
+            return []
+        finally:
+            if read_obj is not None:
+                read_obj.close()
+        #        print('mclusters mcluster read_kit_clusters: Here is kit', kit_id_p, 'and matches found grouped by clusters.')
+        #        show_gds(tmp_gds)
+        return tmp_gds
+
+    def __init__(self, id_p, name_p, day_p, haplogroup_p=None):
+        self.id = id_p                                                                  # Kit id in FTDNA
+        self.name = name_p                                                              # Kit owner real name
         self.date = None
-        self.haplogroup = haplogroup_p
-        # self.date = date.today().strftime("%Y%m%d")  # Today in FTDNA's matchlist format
+        self.gds = [[], [], [], []]
+        self.haplogroup = ''
+        self.file = ''                                                                  # Matchlist filename
+
+        if haplogroup_p is None:
+            self.haplogroup = HAPLOGROUP
+        else:
+            self.haplogroup = haplogroup_p
+
+        #        self.mclu = mcluster(self.id, self.name)
         self.file = DLDIR + id_p + '_mtDNA_Matches_' + day_p + '.csv'
-        self.mclu = mcluster(self.id, self.haplogroup, self.name)
-        self.mclu.gds = self.mclu.read_kit_clusters(self.file, self.id, self.name)
-#        print('CLUSTERS',self.mclu)
+        self.gds = self.read_kit_clusters(self.id, self.name, self.file)          # Read match clusters
 
     def read_kits(fname_p = '') -> list:
         """
@@ -52,6 +83,7 @@ class kit:
 
         return tempkits
 
+
     def getname(self):
         return self.name
 
@@ -60,15 +92,21 @@ class kit:
 
     def show(self, debug1_p=False, debug2_p=False, debug3_p=False):
         print('##### Kit', self.id, '#####', self.name, '#####')  # Show only minimal information:
-        if debug1_p != False:
-            if debug2_p != False:                                              # Kit id and name.
-                if self.mclu != None:                                          # If there are matches.
-                        self.mclu.show(debug2_p,debug3_p)                      # dbg2: print clusters and amount.
-                else:                                                          # dbg3: print match names too.
-                    print('This kit has no mt-dna matches.')
-            if self.mclu != None:
-                print('### KIT SHOW #####')
-                print(self.mclu)
-            else:
-                print('No clusters data.')
+
+        if debug1_p != False:                                               # Print kit id and name
+            matches = 0
+            if self.gds != None:
+                for ix in self.gds:
+                    matches += len(ix)
+            print('Kit has', matches-1, 'matches amd kit owner.')           # And how many matches it has
+
+            if debug2_p != False:                                           # Print amount of matches by clusters
+                if self.gds != None:
+                    ind = 0
+                    for ix in self.gds:
+                        print('Cluster', ind, ' has', len(self.gds[ind]), 'matches.')
+                        ind += 1
+                        if debug3_p != False:                               # Print also match data too
+                            for m5 in ix:
+                                m5.show()
 

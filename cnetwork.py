@@ -8,40 +8,73 @@ Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to autho
 # import pyexcel_ods3
 # from pyexel_io import save_data
 import json
+from mtsettings import GDMAX
+from links import Link
 
-class nclusters:
+
+class Nclusters:
+    links = []                                      # Links between two clusters GD 1 - 3
+    ind = 0
+    # === Constructors
+    haplogroup = 'Default'
+    nclusters = None
+
     def __init__(self, id_p, gd_p):
         self.id = id_p
         self.names = gd_p                    # This cluster has all clusters of a kit
-        self.haplogroup = 'Default'
-        self.links = []
-        self.ind = 0
-        self.nclusters = []
-
-# === Constructors
+        self.ind += 1
 
     def __init__(self):
-        self.haplogroup = 'Default'
-        self.nclusters = []
-        self.ind = 0
+        self.ind += 1
 
 # === Show or output clusters
 
-    def show(self):
-        print('Net clusters:')
-        i = 0
-        for a in self.nclusters:
-            if i < 10:
-                print('Cluster ', i, '\t', end=''),
+    def show_links(self, debug=False):
+        for v in self.links:
+            if debug:
+                print('nclusters show_link: v=', v)
             else:
-                print('Cluster', i, '\t', end=''),
-            if len(a) < 10:
-                print('  ', len(a), '\t',  end='')
+                print(v)
+
+    def show_cluster_matches(self, i=0, wide=False):
+
+        if wide:
+            print(' matches:')
+        else:
+            print('Cluster', i, 'matches:')
+
+        for match in self.nclusters[i]:
+            match.show()
+
+    def show(self, wide: bool = False):
+        if self.nclusters is None:
+            print('Cluster network is empty.')
+            pass
+        else:
+            print('Net clusters:')
+            i = 0
+            for a in self.nclusters:
+                if i < 10:
+                    print('Cluster ', i, '\t', end=''),
+                else:
+                    print('Cluster', i, '\t', end=''),
+
+                if len(a) < 10:
+                    print('', len(a), 'matches.', end=''),
+                else:
+                    print(len(a), 'matches.', end=''),
+
+                if wide:
+                    self.show_cluster_matches(i, True)
+                else:
+                    print()
+                i += 1
+
+            if len(self.links) > 0:
+                print('Cluster links:')
+                show_links()
             else:
-                print(' ', len(a), '\t',  end='')
-            print(a, end='')
-            print(' ')
-            i += 1
+                print('No links in cluster network.')
 
     def mk_txt(self, cluster_p=None):
         if cluster_p is None:
@@ -70,6 +103,7 @@ class nclusters:
                             print(' ' + m[6].strip(','))
                             line1 = False
                 i += 1
+
 
     def show_mdkas(self, cluster_p=None):
         known, unknown = 0, 0
@@ -134,6 +168,10 @@ class nclusters:
 
     def add(self, cluster_p):
         # First we create a tuple where is node name and then list of persons (oldest mother line mother)
+
+        if self.nclusters is None:
+            self.nclusters = []
+
         self.nclusters.append(cluster_p)
         self.ind += 1
 
@@ -186,7 +224,7 @@ class nclusters:
             j = 0
             for j in range(len(clu2_p)):
                 for ix in range(1, 9):                      # First field GD can vary, ignore it
-                    if not nclusters.is_same_match(clu1_p[ix], clu2_p[ix]):
+                    if not Nclusters.is_same_match(clu1_p[ix], clu2_p[ix]):
                         return False
                 j += 1
             i += 1
@@ -237,7 +275,7 @@ class nclusters:
         for clu1 in self.nclusters:
             ind2 = ind1 + 1
             for clu2 in self.nclusters[(ind1+1):]:                # Compare first iterable with next to end of list
-                if nclusters.is_same_cluster(clu1, clu2):
+                if Nclusters.is_same_cluster(clu1, clu2):
                     found = True
                     # print('Found same clusters',ind1,'(',len(clu),') and ',ind2,'(',len(clu2),')')
                     issamematch = True
@@ -264,7 +302,8 @@ class nclusters:
     def split_cluster(self, clu_original_p, clu_check_p):
         # Add matches to new cluster. And new cluster to clusters list.
         # FIXME: Test, if this split cluster works.
-        new_clu = self.mclusters()
+        new_clu = []
+        # mcluster()
         for m in clu_check_p:
             for m2 in clu_original_p:
                 if m != m2:
@@ -300,7 +339,7 @@ class nclusters:
         ind1 = 0
         for clu in self.nclusters:
             ind2 = ind1 + 1
-            for clu2 in self.nclusters[(ind1+1):]:                # Compare first iterable with next to end of list
+            for clu2 in self.nclusters[(ind1 + 1):]:                # Compare first iterable with next to end of list
                 # Test if the two cluster have matches which have different GD-value than others.
                 # So, they belongs to other new cluster
                 if compare_cluster_pair(clu, clu2):
@@ -310,9 +349,9 @@ class nclusters:
     def search_match(self, cluster1_p, cluster2_p, mname_p) -> bool:
         """
             If mname_p is in cluster_p return True, otherwise False.
-        :param cluster_p:
+        :param cluster1_p:
             Cluster1 where to search
-        :param cluster_p:
+        :param cluster2_p:
             Cluster2 where to search
         :param mname_p:
             Search match name
@@ -325,9 +364,69 @@ class nclusters:
                     return True
         return False
 
+    def add_first_kit_cluster_data(self, nclus_p, ind_p):
+        """
+        Searches and copies kit owner data from some match of network. Why? Read documents.
+        :return:
+        """
+        print(nclus_p[ind_p])
 
+#        search_name = nclus_p[ind_p][0][1][0]  # Kit owner is on the first cluster
+        search_name = 'Ilpo Kantonen'
+        c1 = 0
+        if len(nclus_p[ind_p]) > 0:                             # Is kit owner cluster empty?
+            for c in nclus_p:
+                c1 +=1
+                m2 = 0
+                for m in c:
+                    m2 += 1
+#                    if m[1][0] == search_name:
+                    print('Etsitään klusterin ensimmäistä mätsin kokonimeä. Se on', m.Fullname)
+                    if m[0] == search_name:
+                        if (m2 - 1 != ind_p) and him_not_empty(m):
+                            him = nclus_p[c1 - 1][m2 - 1][1]    # This is bogus tuple in full flavor from found tuple
+                            removed_cluster = nclus_p.pop(ind_p)            # Remove cluster containing bogus match
+                            bogusmatch = removed_cluster[0][0][0]           # Extract bogus match
+                            temp3 = ((bogusmatch),'0')
+                            tempmatch = (temp3, him)                                  # nclus_p[c1 - 2][m2 - 1][1])
+                            temptuplelist = []
+                            temptuplelist.append(tempmatch)
+                            for ix in range(1, len(removed_cluster)):
+                                temptuplelist.append(removed_cluster[ix])
+                            nclus_p.insert(ind_p, temptuplelist)
+                            return
+        return
 
-# === Output Clusters to other format
+    # === Network operations
+
+    def add_gd_links(self, debug=False):
+        if debug:
+            print('cnetwork.add_gd_links: Begins adding links to network clusters.')
+        for i in range(0, len(self.nclusters), 4):
+            if debug:
+                print('To every fourth cluster:', i)
+            for j in range(1, GDMAX):
+                if debug:
+                    print('cnetwork.add_gd_links: clu', i, 'r', j, ':\t', i, '->', i+j)
+                if (self.nclusters[i] != None) and (self.nclusters[i+j] != None):
+                    tmp_link = Link(i, i+j, j)
+#                    self.add_gd_links(i,i+j, j)
+                    pass
+                else:
+                    if debug:
+                        print('List item', i, 'or', j, 'was None.')
+        print('add_gd_links: done.')
+
+    def add_link(self, clu1_p, clu2_p, dist_p):
+
+        tmp_link = Link(clu1_p, clu2_p, dist_p)
+        self.links.append(tmp_link)
+
+    #    if clu2_p not in clu1_p.links[0]:                               # Is there already a link
+    #        clu1_p.links.append(tuple(clu2_p, dist_p))
+    #        clu2_p.links.add(tuple(clu1_p, dist_p))
+
+    # === Output Clusters to other format
 
     def mk_spreadsheet(self, fname_p='spreadsheet.ods'):
         """
@@ -441,7 +540,16 @@ def compare_cluster_pair(clu1_p, clu2_p):
     #  If they are not, move extra matches to new cluster
     return False
 
-def add_links(clu1_p, clu2_p, dist):
-    if clu2_p not in clu1_p.links[0]:                               # Is there already a link
-        clu1_p.links.add(tuple(clu2_p,dist))
-        clu2_p.links.add(tuple(clu1_p,dist))
+
+def him_not_empty(m_p: tuple) -> bool:
+    notempty = False
+    for i in range(1, 7):
+        if m_p[1][i] != '':
+            notempty = True
+    return notempty
+
+def show_him(m_p: tuple):
+    print('Him:', end=''),
+    for i in range(1, 7):
+        print(m_p[1][i],'x', end=''),
+    print()

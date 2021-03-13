@@ -16,7 +16,7 @@ Matchlist format
     7   Haplogroup
     8   Match date
 
-    ml = ((0,'GD'),(1,'Full Name'),(2,'First Name'),(3,'Middle Name'),(4,'Last Name'),(5,'Email'),
+    ml = ((kit_id,'GD'),(1,'Full Name'),(2,'First Name'),(3,'Middle Name'),(4,'Last Name'),(5,'Email'),
           (6,'Earliest Known Ancestor'),(7,'mtDNA Haplogroup'),(8,'Match Date'))
 
     A match data is a tuple now since 9 Feb 2021. Before it was a list.

@@ -15,9 +15,10 @@ Version 0.2.1.
 """
 
 from os import path
-from kit import kit
-from cnetwork import nclusters
+from kit import Kit
+from cnetwork import Nclusters
 from mtsettings import HAPLOGROUP
+from mtsettings import OUTPUTDIR
 
 def menu():
     command = '9'
@@ -47,23 +48,23 @@ def menu():
 
 if __name__ == '__main__':
     fname: str = HAPLOGROUP + '.json'
-    n = nclusters()
+    n = Nclusters()
 
     if path.isfile(fname):
         print('There is already a network of haploroup', HAPLOGROUP, 'clusters. Reading.')
         n.read(fname)
     else:
-        print('Reading', hg, 'kits.')
+        print('Reading', HAPLOGROUP, 'kits.')
 
         kits = []                                           # This is list of kits. First empty.
-        kits_to_list = kit.read_kits()                      # Read information of kits from kits.csv.
+        kits_to_list = Kit.read_kits()                      # Read information of kits from kits.csv.
 
         for k in kits_to_list:
-            new_kit = kit(k[0], k[1], k[2], hg)                 # Create kit which have information and clustered matches.
+            new_kit = Kit(k[0], k[1], k[2], HAPLOGROUP)     # Create kit which have information and clustered matches.
             kits.append(new_kit)                            # Add to list.
 
         for k in kits:                                      # Add every kits every GD clusters to netclusters
-            for z in k.mclu.gds:
+            for z in k.gds:
                 n.add(z)
 
         dint = 0
@@ -72,21 +73,15 @@ if __name__ == '__main__':
         if dint:
             print('Removed', dint, 'duplicate clusters.')
 
-        # n.write('U8a1a1b1_unduplicated.json')
-
         sint = 0
         while n.split_clusters():                           # Then split non GD uniform clusters
             sint += 1
         if sint:
             print('Splitted', sint, ' clusters.')
 
-
     menu()
+    n.write(OUTPUTDIR + HAPLOGROUP + '.json')
 
-n.write(fname)
-
-    # n.mk_txt(1)                                       # Print one cluster (MDKAs)
-    # n.mk_xml()                                        # Print in XML form
-    # n.gephi()                                         # Write nodes.csv and links.csv to Gephi
-
-    # ###################################
+# n.mk_txt(1)                                       # Print one cluster (MDKAs)
+# n.mk_xml()                                        # Print in XML form
+# n.gephi()                                         # Write nodes.csv and links.csv to Gephi
