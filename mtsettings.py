@@ -2,6 +2,6 @@
 
 GDMAX = 4
 KITSFILE = 'kits.csv'
-DLDIR = '/home/ilpo/Lataukset/'
-HAPLOGROUP = 'U8a1a1b1'
-OUTPUTDIR = '/home/ilpo/PycharmProjects/mt_network/'
+DLDIR = '/home/user/Downloads/'
+HAPLOGROUP = 'A1b2c3'
+OUTPUTDIR = '/home/user/mt_network/'
