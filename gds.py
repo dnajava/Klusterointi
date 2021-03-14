@@ -1,5 +1,5 @@
 """
-Matches of one kit grouped by GD.
+GD levels of one kit grouped by GD.
 """
 
 from mtsettings import GDMAX
