@@ -9,23 +9,22 @@ Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to autho
 # from pyexel_io import save_data
 import json
 from mtsettings import GDMAX
+from mtsettings import HAPLOGROUP
 from links import Link
 
 
 class Nclusters:
     links = []                                      # Links between two clusters GD 1 - 3
-    ind = 0
-    # === Constructors
-    haplogroup = 'Default'
-    nclusters = None
+    nclusters = None                                # Clusters from kits gd clusters
 
-    def __init__(self, id_p, gd_p):
-        self.id = id_p
-        self.names = gd_p                    # This cluster has all clusters of a kit
-        self.ind += 1
-
-    def __init__(self):
-        self.ind += 1
+    def __init__(self, haplogroup_p=HAPLOGROUP):
+        """
+        Constructs cluster network.
+        :param id_p:
+        :param gd_p:
+        """
+        self.ind = 0
+        self.haplogroup = haplogroup_p
 
 # === Show or output clusters
 
@@ -72,7 +71,7 @@ class Nclusters:
 
             if len(self.links) > 0:
                 print('Cluster links:')
-                show_links()
+                self.show_links()
             else:
                 print('No links in cluster network.')
 
@@ -104,13 +103,31 @@ class Nclusters:
                             line1 = False
                 i += 1
 
+    def mk_email_list(self) -> str:
+        """
+        Returns list of emails in network.
+        :return: str List of emails with ; in network
+        """
+        email_list = []
+        for c in self.nclusters:
+            for m in c:
+                email_list.append(m.Email)
+        """
+        Remove duplicate emails before returning
+        U{https://www.w3schools.com/python/python_howto_remove_duplicates.asp}
+        """
+        email_list = list(dict.fromkeys(email_list))
+        e_list = ''
+        for em in email_list:
+                e_list += em + '; '
+        return e_list
 
     def show_mdkas(self, cluster_p=None):
         known, unknown = 0, 0
         i = 0
         # FIXME: Known and unknown problem. Is that individual match or total all matches?
 
-        if cluster_p == None:
+        if cluster_p is None:
             for clu in self.nclusters:
                 print('\nCluster', i+1)
                 for match in clu:
@@ -219,15 +236,11 @@ class Nclusters:
             return False
 
         # Both clusters are the same length. Analyze if matches are same as pairs.
-        i = 0
         for i in range(len(clu1_p)):
-            j = 0
             for j in range(len(clu2_p)):
                 for ix in range(1, 9):                      # First field GD can vary, ignore it
                     if not Nclusters.is_same_match(clu1_p[ix], clu2_p[ix]):
                         return False
-                j += 1
-            i += 1
         # print('Yes, clusters are same.')
         return True
 
