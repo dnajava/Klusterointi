@@ -7,7 +7,7 @@ from mtsettings import GDMAX
 
 
 class Basematch:
-    def __init__(self, kit_p, gd_p, fun, fin, min, lan, email_p, mdka_p):
+    def __init__(self, kit_p, gd_p, fun_p, fin_p, min_p, lan_p, email_p, mdka_p):
         """
         :param fun:
         :param fin:
@@ -18,10 +18,10 @@ class Basematch:
         """
         self.kit = kit_p
         self.gd = gd_p
-        self.Fullname = fun
-        self.Firstname = fin
-        self.Middlename = min
-        self.Lastname = lan
+        self.Fullname = fun_p
+        self.Firstname = fin_p
+        self.Middlename = min_p
+        self.Lastname = lan_p
         self.Email = email_p
         self.MDKA = mdka_p
 
