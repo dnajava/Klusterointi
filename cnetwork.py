@@ -20,8 +20,7 @@ class Nclusters:
     def __init__(self, haplogroup_p=HAPLOGROUP):
         """
         Constructs cluster network.
-        :param id_p:
-        :param gd_p:
+        :param haplogroup_p:
         """
         self.ind = 0
         self.haplogroup = haplogroup_p
