@@ -49,7 +49,7 @@ class Nclusters:
             print('Cluster network is empty.')
             pass
         else:
-            print('Net clusters:')
+            print('Net clusters of', self.haplogroup, ':')
             i = 0
             for a in self.nclusters:
                 if i < 10:
@@ -69,10 +69,10 @@ class Nclusters:
                 i += 1
 
             if len(self.links) > 0:
-                print('Cluster links:')
+                print('Cluster links in', self.haplogroup, ':')
                 self.show_links()
             else:
-                print('No links in cluster network.')
+                print('No links between clusters in', self.haplogroup, 'network.')
 
     def mk_txt(self, cluster_p=None):
         if cluster_p is None:
@@ -118,7 +118,7 @@ class Nclusters:
         email_list = list(dict.fromkeys(email_list))
         e_list = ''
         for em in email_list:
-                e_list += em + '; '
+            e_list += em + '; '
         return e_list
 
     def show_mdkas(self, cluster_p=None):
@@ -160,7 +160,7 @@ class Nclusters:
     def amount_unknown_mdkas(self, cluster_p=None):
         unknown = 0
         i = 0
-        if cluster_p == None:
+        if cluster_p is None:
             for clu in self.nclusters:
                 unknown = 0
                 print('\nCluster', i+1)
@@ -190,10 +190,6 @@ class Nclusters:
 
         self.nclusters.append(cluster_p)
         self.ind += 1
-
-    def sort_mdkas(self):
-        # This method sorts cluster mdkas to ascending order
-        return False
 
     @staticmethod
     def is_equal_cluster(list_p1, list_p2):
@@ -258,7 +254,8 @@ class Nclusters:
             i += 1
         return i
 
-    def copy_extra_matches(self, clu_p1, clu_p2):
+    @staticmethod
+    def copy_extra_matches(clu_p1, clu_p2):
         extras = []
         for c2 in clu_p2:
             found = False
@@ -288,19 +285,21 @@ class Nclusters:
             ind2 = ind1 + 1
             for clu2 in self.nclusters[(ind1+1):]:                # Compare first iterable with next to end of list
                 if Nclusters.is_same_cluster(clu1, clu2):
-                    found = True
+                    # found = True
                     # print('Found same clusters',ind1,'(',len(clu),') and ',ind2,'(',len(clu2),')')
                     issamematch = True
-                    for ix in range(0,len(clu1)):
+                    for ix in range(0, len(clu1)):
                         if clu1[ix] != clu2[ix]:
                             issamematch = False
                     if issamematch:
-                        found = True
+                        # found = True
                         # print('Same matches paired.')
+                        pass
                     else:
-                        found = False
+                        # found = False
                         # print('Not same matches.')
-#                    self.copy_extra_matches(clu, clu2)            # Cluster to be deleted can contain matches,
+                        pass
+#                   self.copy_extra_matches(clu, clu2)            # Cluster to be deleted can contain matches,
                     self.nclusters.pop(ind2)                      # which original cluster don't have
                     # print('Removed cluster', ind2)
                     ind2 += 1
@@ -311,7 +310,8 @@ class Nclusters:
         if found:
             return found
 
-    def split_cluster(self, clu_original_p, clu_check_p):
+    @staticmethod
+    def split_cluster(clu_original_p, clu_check_p):
         # Add matches to new cluster. And new cluster to clusters list.
         # FIXME: Test, if this split cluster works.
         new_clu = []
@@ -347,10 +347,10 @@ class Nclusters:
         GD values to all cluster matches, split is saturated. If not, there is something to split
         """
 
-        found = False
+        # found = False
         ind1 = 0
         for clu in self.nclusters:
-            ind2 = ind1 + 1
+            # ind2 = ind1 + 1
             for clu2 in self.nclusters[(ind1 + 1):]:                # Compare first iterable with next to end of list
                 # Test if the two cluster have matches which have different GD-value than others.
                 # So, they belongs to other new cluster
@@ -358,13 +358,9 @@ class Nclusters:
                     return True
         return False
 
-    def search_match(self, cluster1_p, cluster2_p, mname_p) -> bool:
+    def search_match(self, mname_p) -> bool:
         """
             If mname_p is in cluster_p return True, otherwise False.
-        :param cluster1_p:
-            Cluster1 where to search
-        :param cluster2_p:
-            Cluster2 where to search
         :param mname_p:
             Search match name
         :return: bool
@@ -376,7 +372,8 @@ class Nclusters:
                     return True
         return False
 
-    def add_first_kit_cluster_data(self, nclus_p, ind_p):
+    @staticmethod
+    def add_first_kit_cluster_data(nclus_p, ind_p):
         """
         Searches and copies kit owner data from some match of network. Why? Read documents.
         :return:
@@ -388,7 +385,7 @@ class Nclusters:
         c1 = 0
         if len(nclus_p[ind_p]) > 0:                             # Is kit owner cluster empty?
             for c in nclus_p:
-                c1 +=1
+                c1 += 1
                 m2 = 0
                 for m in c:
                     m2 += 1
@@ -399,7 +396,7 @@ class Nclusters:
                             him = nclus_p[c1 - 1][m2 - 1][1]    # This is bogus tuple in full flavor from found tuple
                             removed_cluster = nclus_p.pop(ind_p)            # Remove cluster containing bogus match
                             bogusmatch = removed_cluster[0][0][0]           # Extract bogus match
-                            temp3 = ((bogusmatch),'0')
+                            temp3 = (bogusmatch, '0')
                             tempmatch = (temp3, him)                                  # nclus_p[c1 - 2][m2 - 1][1])
                             temptuplelist = []
                             temptuplelist.append(tempmatch)
@@ -420,9 +417,9 @@ class Nclusters:
             for j in range(1, GDMAX):
                 if debug:
                     print('cnetwork.add_gd_links: clu', i, 'r', j, ':\t', i, '->', i+j)
-                if (self.nclusters[i] != None) and (self.nclusters[i+j] != None):
-                    tmp_link = Link(i, i+j, j)
-#                    self.add_gd_links(i,i+j, j)
+                if (self.nclusters[i] is not None) and (self.nclusters[i+j] is not None):
+                    #  tmp_link = Link(i, i+j, j)
+                    #  self.add_gd_links(i, i+j, j)
                     pass
                 else:
                     if debug:
@@ -458,21 +455,22 @@ class Nclusters:
 
         # FIXME: Add code to make a spreadsheet and save it to file
 
-        i = 0
         for x in self.nclusters:
             for x2 in x:
                 clu += x2
             sheet += clu
         # pyexel_ods3.save_data(fname_p, sheet)
 
+        with open(fname_p, 'w') as f:
+            # indent=2 is not needed but makes the file human-readable
+            sheet.save_data(f, 'w')              # This doesn't work, but...
+
+
+
     def mk_xml(self):
         """
-        :return:
-            Nothing
-
         This function prints XML document of haplogroup MDKAs.
         """
-
         print('<clusters>')                                 # Start of xml
         for c in self.nclusters:
             # line1 = True
@@ -539,7 +537,7 @@ class Nclusters:
                     i += 1
                     # Source, Target, Type, Id, Label, timeset, Weight
                     str4 = str(i) + ',' + str(cur_node) + ',Directed,' + str(link_id) + ',,,'
-                    str4 += str(link_weight_persons) +'\n'
+                    str4 += str(link_weight_persons) + '\n'
                     linksfile.write(str4)
                     link_id += 1
         nodesfile.close()
@@ -550,6 +548,8 @@ class Nclusters:
 def compare_cluster_pair(clu1_p, clu2_p):
     # TODO: Add code to compare if two clusters are GD uniform or not.
     #  If they are not, move extra matches to new cluster
+    if clu1_p is not clu2_p:
+        pass  # nonsense if, because no error messages
     return False
 
 
@@ -563,5 +563,5 @@ def him_not_empty(m_p: tuple) -> bool:
 def show_him(m_p: tuple):
     print('Him:', end=''),
     for i in range(1, 7):
-        print(m_p[1][i],'x', end=''),
+        print(m_p[1][i], 'x', end=''),
     print()
