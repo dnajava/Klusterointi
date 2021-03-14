@@ -16,16 +16,16 @@ class Gds:
         if value_p is not None and 0 <= level_p < GDMAX:
             self.gds[level_p] = value_p
 
+    def ___getitem___(self, i: int):
+        return self.gds[i]
+
     def add(self, idx, value):
         self.gds[idx].append(value)
 
-    def get(self, idx):
-        return self.gds[idx]
-
-    def show(self):
-        for a in self.gds:
-            print(a)
-
-    def print_wide(self):
-        for i in range(0, GDMAX, 1):
-            print('GD ', i, self.gds[i])
+    def show(self, i=0):
+        if 0 <= i < GDMAX:
+            print('GD', i, self.gds[i])
+        else:
+            for a in self.gds:
+                for i in range(0, GDMAX, 1):
+                    print('GD ', i, a)
