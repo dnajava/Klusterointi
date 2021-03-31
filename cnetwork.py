@@ -11,9 +11,11 @@ import json
 from mtsettings import GDMAX
 from mtsettings import HAPLOGROUP
 from links import Link
-
+from kclusters import Match
+import copy
 
 class Nclusters:
+    """Cluster network and it's operations"""
     links = []                                      # Links between two clusters GD 1 - 3
     nclusters = None                                # Clusters from kits gd clusters
 
@@ -34,17 +36,11 @@ class Nclusters:
             else:
                 print(v)
 
-    def show_cluster_matches(self, i=0, wide=False):
-
-        if wide:
-            print(' matches:')
-        else:
-            print('Cluster', i, 'matches:')
-
+    def show_cluster_matches(self, i=0):
         for match in self.nclusters[i]:
             match.show()
 
-    def show(self, wide: bool = False):
+    def show(self, wide: bool = False, extra_wide: bool = False):
         if self.nclusters is None:
             print('Cluster network is empty.')
             pass
@@ -53,17 +49,13 @@ class Nclusters:
             i = 0
             for a in self.nclusters:
                 if i < 10:
-                    print('Cluster ', i, '\t', end=''),
+                    print('Cluster ', i, end=''),
                 else:
-                    print('Cluster', i, '\t', end=''),
+                    print('Cluster', i, end=''),
+                print(' has', len(a), 'matches.')
 
-                if len(a) < 10:
-                    print('', len(a), 'matches.', end=''),
-                else:
-                    print(len(a), 'matches.', end=''),
-
-                if wide:
-                    self.show_cluster_matches(i, True)
+                if extra_wide:
+                    self.show_cluster_matches(i)
                 else:
                     print()
                 i += 1
@@ -182,14 +174,47 @@ class Nclusters:
 
 # === Basic Cluster Operations
 
-    def add(self, cluster_p):
-        # First we create a tuple where is node name and then list of persons (oldest mother line mother)
+ #   def mk_bogus_match(self, kit_p=None) -> Match:
+ #       """
+ #       Creates a bogus match having only full name of match and perhaps haplogroup.
+ #       :return: Match A bogus match containing only kit owner full name.
+ #       """
+ #       if kit_p is None:
+ #           tmp_match = None
+ #       else:
+ #           tmp_match = Match(kit_p.id, 0, kit_p.name, '', '', '', '', '')
+ #       return tmp_match
 
+    def add_kit(self, kit_p):
+        # First we create a tuple where is node name and then list of persons (oldest mother line mother)
         if self.nclusters is None:
             self.nclusters = []
 
-        self.nclusters.append(cluster_p)
-        self.ind += 1
+        for g in kit_p.gds:
+#            print('Type kit_p.gds', type(kit_p.gds))
+            self.nclusters.append(g)
+
+
+#        # tmpmatch = mk_bogus_match(kit_p)
+#        him = kit_p.gds.gd0
+#        print('tyyppi him[0]=', type(him[0]))
+#        print('him=', him[0].show, him[1].show)
+#        print('self.ind=', self.ind)
+#        self.nclusters.append(Match(kit_p.haplogroup, 0, kit_p.name, '', '', '', '', ''))
+#        print('---print---')
+#        self.show(True)
+#        self.nclusters[self.ind].append(him)
+#        print('---print---')
+#        self.show(True)
+#        exit(0)
+#        self.ind += 1
+#        print('cluster 0=', self.nclusters[0])
+#        self.nclusters[self.ind].append(kit_p.gds.gd1)
+#        self.ind += 1
+#        self.nclusters[self.ind].append(kit_p.gds.gd2)
+#        self.ind += 1
+#        self.nclusters[self.ind].append(kit_p.gds.gd3)
+#        self.ind += 1
 
     @staticmethod
     def is_equal_cluster(list_p1, list_p2):
@@ -373,37 +398,68 @@ class Nclusters:
         return False
 
     @staticmethod
-    def add_first_kit_cluster_data(nclus_p, ind_p):
+    def add_first_kit_cluster_data(nclus_p, ind_p) -> bool:
         """
         Searches and copies kit owner data from some match of network. Why? Read documents.
-        :return:
+        :return: bool Did the kit owner match get all fields from some other match?
         """
-        print(nclus_p[ind_p])
 
-#        search_name = nclus_p[ind_p][0][1][0]  # Kit owner is on the first cluster
-        search_name = 'Ilpo Kantonen'
+        if not 0 <= ind_p < len(nclus_p):
+            print('Cnetwork add_first_kit_cluster_data: parameter index out of ncluster list.')
+            return False
+
+        if not ind_p % 4 == 0:                              # Is cluster kit cluster 0 (kit owners cluster 0)
+            print('Cnetwork add_first_kit_cluster_data: Index', ind_p, 'not kit cluster 0.')
+            return False
+
+        search_name = nclus_p[ind_p][0].Fullname            # Kit owner cluster 0 first match is bogus and owner name
+
+        print('ind_p=', ind_p)
+
+        clu_him = []
+        print('Tyyppi nclus_p[', ind_p, ']= ', type(nclus_p[ind_p]))
+        print('nclus_p[', ind_p,'][0]=', nclus_p[ind_p][0])
+        if len(nclus_p[ind_p]) > 1:
+            for i in range(1, len(nclus_p[ind_p])):         # Rest of cluster after bogus match
+                if i > 0:
+                    print('Himiin', i)
+                    nclus_p[ind_p][i].show()
+#                    print('Tyyppi nclus_p[ind_p][i]=', type(nclus_p[ind_p][i]))
+#                    clu_him.append(nclus_p[ind_p][i])
+
         c1 = 0
-        if len(nclus_p[ind_p]) > 0:                             # Is kit owner cluster empty?
-            for c in nclus_p:
+        ii = 0
+        for c in nclus_p:
+            if len(c) > 0:
+                print('In cluster', ii)
                 c1 += 1
-                m2 = 0
+                mi2 = 0
                 for m in c:
-                    m2 += 1
-#                    if m[1][0] == search_name:
-                    print('Etsitään klusterin ensimmäistä mätsin kokonimeä. Se on', m.Fullname)
-                    if m[0] == search_name:
-                        if (m2 - 1 != ind_p) and him_not_empty(m):
-                            him = nclus_p[c1 - 1][m2 - 1][1]    # This is bogus tuple in full flavor from found tuple
-                            removed_cluster = nclus_p.pop(ind_p)            # Remove cluster containing bogus match
-                            bogusmatch = removed_cluster[0][0][0]           # Extract bogus match
-                            temp3 = (bogusmatch, '0')
-                            tempmatch = (temp3, him)                                  # nclus_p[c1 - 2][m2 - 1][1])
-                            temptuplelist = []
-                            temptuplelist.append(tempmatch)
-                            for ix in range(1, len(removed_cluster)):
-                                temptuplelist.append(removed_cluster[ix])
-                            nclus_p.insert(ind_p, temptuplelist)
+                    mi2 += 1
+                    print('Match', mi2)
+                    m.show()
+                    print('(1.) (kit) klusterin', ind_p, 'koko nimi', m.Fullname, 'ja etsittävä nimi', search_name)
+                    if m.Fullname == search_name:
+                        print('Nimi oli sama kuin etsitty nimi.')
+                        if (mi2 - 1 != ind_p) and him_not_empty(m):
+                            print('Ei ollut vaihdettava kit klusteri. Him ei ollut tyhjä.')
+                            print('Poistettava klusteri len=', len(nclus_p[ind_p]), 'ja klusteri=', nclus_p[ind_p])
+                            removed = nclus_p.pop(ind_p)                    # Remove cluster containing bogus match
+                            print('Removed=')
+                            removed.show()
+                            tempmatch = Match(removed[0].kit_p, removed[0].gd_p,
+                                              m.Fullname, m.Firstname, m.Middlename, m.Lastname, m.Email, m.MDKA)
+                            tempclulist = []
+                            tempclulist.append(tempmatch)
+                            tempclulist += clu_him
+                            nclus_p.insert(ind_p, tempclulist)
                             return
+                        else:
+                            print('Him oli tyhjä eli on bogus mätsi.')
+                    else:
+                        print(m.Fullname, 'ei ollut etsittävä nimi', search_name)
+            else:
+                print('Cnetwork add_first_kit_cluster_data() Cluster', ind_p, ' is empty.')
         return
 
     # === Network operations
@@ -555,9 +611,11 @@ def compare_cluster_pair(clu1_p, clu2_p):
 
 def him_not_empty(m_p: tuple) -> bool:
     notempty = False
-    for i in range(1, 7):
-        if m_p[1][i] != '':
-            notempty = True
+#    print('him_not_empty type(m_p)=', type(m_p))
+#    m_p.show()
+#    for i in range(1, 7):
+    if m_p.Firstname != '' or m_p.Email != '':
+        notempty = True
     return notempty
 
 def show_him(m_p: tuple):
