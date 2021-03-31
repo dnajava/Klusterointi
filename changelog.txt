@@ -1,3 +1,4 @@
+ 1 Apr 2021 Fixed and reorganised Kit, Gds and Cnetwork.
 14 Mar 2021 Unnamed tuples changed to classes. Camel Case names.
 11 Mar 2021 Added mtsettings.py where global settings
  4 Mar 2021 Fixed object reference bug.
