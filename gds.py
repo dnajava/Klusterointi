@@ -7,9 +7,6 @@ class Gds:
     def __init__(self):
         """
         Creates new empty Gds.
-        :param level_p:
-        :param value_p:
-        :return:
         """
         self.gd0, self.gd1, self.gd2, self.gd3 = [], [], [], []
         self.gdses = [self.gd0, self.gd1, self.gd2, self.gd3]
