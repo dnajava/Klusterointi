@@ -403,7 +403,6 @@ class Nclusters:
         Searches and copies kit owner data from some match of network. Why? Read documents.
         :return: bool Did the kit owner match get all fields from some other match?
         """
-
         if not 0 <= ind_p < len(nclus_p):
             print('Cnetwork add_first_kit_cluster_data: parameter index out of ncluster list.')
             return False
@@ -413,54 +412,26 @@ class Nclusters:
             return False
 
         search_name = nclus_p[ind_p][0].Fullname            # Kit owner cluster 0 first match is bogus and owner name
+        bogus_match = nclus_p[ind_p].pop(0)                 # Take away and keep bogus match
 
-        print('ind_p=', ind_p)
-
-        clu_him = []
-        print('Tyyppi nclus_p[', ind_p, ']= ', type(nclus_p[ind_p]))
-        print('nclus_p[', ind_p,'][0]=', nclus_p[ind_p][0])
-        if len(nclus_p[ind_p]) > 1:
-            for i in range(1, len(nclus_p[ind_p])):         # Rest of cluster after bogus match
-                if i > 0:
-                    print('Himiin', i)
-                    nclus_p[ind_p][i].show()
-#                    print('Tyyppi nclus_p[ind_p][i]=', type(nclus_p[ind_p][i]))
-#                    clu_him.append(nclus_p[ind_p][i])
-
-        c1 = 0
-        ii = 0
+        c1, ii = 0, 0
         for c in nclus_p:
             if len(c) > 0:
-                print('In cluster', ii)
                 c1 += 1
-                mi2 = 0
                 for m in c:
-                    mi2 += 1
-                    print('Match', mi2)
-                    m.show()
-                    print('(1.) (kit) klusterin', ind_p, 'koko nimi', m.Fullname, 'ja etsittävä nimi', search_name)
                     if m.Fullname == search_name:
-                        print('Nimi oli sama kuin etsitty nimi.')
-                        if (mi2 - 1 != ind_p) and him_not_empty(m):
-                            print('Ei ollut vaihdettava kit klusteri. Him ei ollut tyhjä.')
-                            print('Poistettava klusteri len=', len(nclus_p[ind_p]), 'ja klusteri=', nclus_p[ind_p])
-                            removed = nclus_p.pop(ind_p)                    # Remove cluster containing bogus match
-                            print('Removed=')
-                            removed.show()
-                            tempmatch = Match(removed[0].kit_p, removed[0].gd_p,
-                                              m.Fullname, m.Firstname, m.Middlename, m.Lastname, m.Email, m.MDKA)
-                            tempclulist = []
-                            tempclulist.append(tempmatch)
-                            tempclulist += clu_him
-                            nclus_p.insert(ind_p, tempclulist)
-                            return
-                        else:
-                            print('Him oli tyhjä eli on bogus mätsi.')
-                    else:
-                        print(m.Fullname, 'ei ollut etsittävä nimi', search_name)
+                        bogus_match.Firstname = m.Firstname
+                        bogus_match.Middlename = m.Middlename
+                        bogus_match.Lastname = m.Lastname
+                        bogus_match.Email = m.Email
+                        bogus_match.MDKA = m.MDKA
+                        # bogus_match.Date = m.Date
+
+                        nclus_p[ind_p].insert(0, bogus_match)
+                        return True
             else:
                 print('Cnetwork add_first_kit_cluster_data() Cluster', ind_p, ' is empty.')
-        return
+        return False
 
     # === Network operations
 
