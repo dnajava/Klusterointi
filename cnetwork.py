@@ -173,47 +173,12 @@ class Nclusters:
 
 # === Basic Cluster Operations
 
- #   def mk_bogus_match(self, kit_p=None) -> Match:
- #       """
- #       Creates a bogus match having only full name of match and perhaps haplogroup.
- #       :return: Match A bogus match containing only kit owner full name.
- #       """
- #       if kit_p is None:
- #           tmp_match = None
- #       else:
- #           tmp_match = Match(kit_p.id, 0, kit_p.name, '', '', '', '', '')
- #       return tmp_match
-
     def add_kit(self, kit_p):
         # First we create a tuple where is node name and then list of persons (oldest mother line mother)
         if self.nclusters is None:
             self.nclusters = []
-
         for g in kit_p.gds:
-#            print('Type kit_p.gds', type(kit_p.gds))
             self.nclusters.append(g)
-
-
-#        # tmpmatch = mk_bogus_match(kit_p)
-#        him = kit_p.gds.gd0
-#        print('tyyppi him[0]=', type(him[0]))
-#        print('him=', him[0].show, him[1].show)
-#        print('self.ind=', self.ind)
-#        self.nclusters.append(Match(kit_p.haplogroup, 0, kit_p.name, '', '', '', '', ''))
-#        print('---print---')
-#        self.show(True)
-#        self.nclusters[self.ind].append(him)
-#        print('---print---')
-#        self.show(True)
-#        exit(0)
-#        self.ind += 1
-#        print('cluster 0=', self.nclusters[0])
-#        self.nclusters[self.ind].append(kit_p.gds.gd1)
-#        self.ind += 1
-#        self.nclusters[self.ind].append(kit_p.gds.gd2)
-#        self.ind += 1
-#        self.nclusters[self.ind].append(kit_p.gds.gd3)
-#        self.ind += 1
 
     @staticmethod
     def is_equal_cluster(list_p1, list_p2):
