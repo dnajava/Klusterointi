@@ -3,15 +3,13 @@ Network of mt-dna GD clusters. Tools to add nodes, find and delete duplicate clu
 txt, xml or spreadsheet. And make nodes.csv and links.csv to Gephi.
 Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to author.
 """
-
-# FIXME: pip3 install pyexcel-ods3 (doesn't work)
-# import pyexcel_ods3
-# from pyexel_io import save_data
-import json
 from mtsettings import GDMAX
 from mtsettings import HAPLOGROUP
 from links import Link
-# from kclusters import Match
+from clusters import Match
+import json
+# import pyexcel_ods3
+# from pyexel_io import save_data
 # import copy
 
 class Nclusters:
@@ -200,14 +198,15 @@ class Nclusters:
         return True
 
     @staticmethod
-    def is_same_match(m1_p, m2_p):
-        # print('is same match:\n', m1_p,'\n', m2_p)
-        if len(m1_p) != len(m2_p):
-            # print('No, they are different length.')
-            return False
-
-        i = 1                                                   # Index begins from 1, since 0 is GD which can vary
-        for m1 in m1_p:
+    def is_same_match(m1_p: Match, m2_p: Match) -> bool:
+        """
+        Returns true if the contents of matches are equal
+        :param m1_p:    Match 1
+        :param m2_p:    Match 2
+        :return: bool   Are the content of matches equal?
+        """
+        # print('Cnetwork is_same_match:\n', m1_p,'\n', m2_p)
+        for i in range(1, len(m1_p)):                       # Index begins from 1, since 0 is GD which can vary
             if m1_p[i] != m2_p[i]:
                 # print('No, field', i, 'was different', m1_p[i], m2_p[i])
                 return False
@@ -455,8 +454,6 @@ class Nclusters:
             # indent=2 is not needed but makes the file human-readable
             sheet.save_data(f, 'w')              # This doesn't work, but...
 
-
-
     def mk_xml(self):
         """
         This function prints XML document of haplogroup MDKAs.
@@ -543,7 +540,7 @@ def compare_cluster_pair(clu1_p, clu2_p):
     return False
 
 
-def him_not_empty(m_p: tuple) -> bool:
+def him_not_empty(m_p: Match) -> bool:
     notempty = False
 #    print('him_not_empty type(m_p)=', type(m_p))
 #    m_p.show()
