@@ -7,7 +7,7 @@ from csv import reader
 from mtsettings import DLDIR
 from mtsettings import KITSFILE
 from mtsettings import HAPLOGROUP
-from kclusters import Match
+from clusters import FileMatch
 from gds import Gds
 
 class Kit:
@@ -43,13 +43,13 @@ class Kit:
                 csv_reader = reader(read_obj)
                 for m in csv_reader:
                     if ind == 0:
-                        bogus_match = Match(kit_id_p, 0, pname_p, '', '', '', '', '')  # We know full name of kit owner
+                        bogus_match = FileMatch(kit_id_p, 0, pname_p, '', '', '', '', '')  # We know full name of kit owner
                         self.gds.add(0, bogus_match)
                         ind += 1
                         continue
                     else:
                         # DataFormats.txt     kit       gd         fun   fin   min   lam   email mdka
-                        new_match = Match(kit_id_p, int(m[0]), m[1], m[2], m[3], m[4], m[5], m[6])
+                        new_match = FileMatch(kit_id_p, int(m[0]), m[1], m[2], m[3], m[4], m[5], m[6])
                         self.gds.add(int(m[0]), new_match)
                         ind += 1
         except (IOError, OSError) as err:
