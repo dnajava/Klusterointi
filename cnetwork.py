@@ -11,12 +11,11 @@ import json
 from mtsettings import GDMAX
 from mtsettings import HAPLOGROUP
 from links import Link
-from kclusters import Match
-import copy
+# from kclusters import Match
+# import copy
 
 class Nclusters:
     """Cluster network and it's operations"""
-    links = []                                      # Links between two clusters GD 1 - 3
     nclusters = None                                # Clusters from kits gd clusters
 
     def __init__(self, haplogroup_p=HAPLOGROUP):
@@ -26,8 +25,9 @@ class Nclusters:
         """
         self.ind = 0
         self.haplogroup = haplogroup_p
+        self.links = []                             # Links between two clusters GD 1 - 3
 
-# === Show or output clusters
+    # === Show or output clusters
 
     def show_links(self, debug=False):
         for v in self.links:
@@ -56,7 +56,6 @@ class Nclusters:
 
                 if extra_wide:
                     self.show_cluster_matches(i)
-                else:
                     print()
                 i += 1
 
