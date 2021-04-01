@@ -403,6 +403,7 @@ class Nclusters:
         Searches and copies kit owner data from some match of network. Why? Read documents.
         :return: bool Did the kit owner match get all fields from some other match?
         """
+        # FIXME: Network has 4 empty kit clusters. How is kit owners names and other data?
         if not 0 <= ind_p < len(nclus_p):
             print('Cnetwork add_first_kit_cluster_data: parameter index out of ncluster list.')
             return False
@@ -414,10 +415,8 @@ class Nclusters:
         search_name = nclus_p[ind_p][0].Fullname            # Kit owner cluster 0 first match is bogus and owner name
         bogus_match = nclus_p[ind_p].pop(0)                 # Take away and keep bogus match
 
-        c1, ii = 0, 0
         for c in nclus_p:
             if len(c) > 0:
-                c1 += 1
                 for m in c:
                     if m.Fullname == search_name:
                         bogus_match.Firstname = m.Firstname
