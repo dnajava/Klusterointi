@@ -25,13 +25,10 @@ if __name__ == '__main__':
                                                                 # show(), show(True), show(True, True)
 
     n.prepare_clusters()                                        # Fill bogus match and add links kit clusters 0 - 3
-    n.show()
-
-    exit(0)
 
     """
     Now network of clusters has match clusters from every kit and every GD. And there are double linked gd's
-    between clusters. But not tested yet. So next we can
+    between clusters. So next we can
     - search same matches containing clusters and mark them same cluster.
     - split clusters. How about first collect all same matches containing clusters to collection and then split?
     - delete duplicate clusters. Is this wise to do when we have links between clusters depending on kits?
@@ -39,11 +36,28 @@ if __name__ == '__main__':
     Yes. It's again time to think.
     """
 
-    dint = 0
-    while n.delete_duplicates():              # First delete duplicates
-        dint += 1
-    if dint:
-        print('Removed', dint, 'duplicate clusters.')
+    """
+    Search match from whole network and collect cluster containing that match to a collection.
+    Then filter non common matches away and split them own clusters. Then you have a common cluster.
+    Prepare links to pointing to it. This is maybe a complicated process.
+    """
+
+    search_m = n.nclusters[0].matches[0]
+    # print(search_m.Fullname)
+    integrated = n.search_matches_from_clusters(search_m.Fullname)
+    print(integrated)
+    for axis in integrated:
+        print('axis=', axis)
+        for mii in n.nclusters[axis].matches:
+            mii.show()
+
+    exit(0)
+
+#    dint = 0
+#    while n.delete_duplicates():              # First delete duplicates
+#        dint += 1
+#    if dint:
+#        print('Removed', dint, 'duplicate clusters.')
 
 
     #    gui = Gui_mdka()

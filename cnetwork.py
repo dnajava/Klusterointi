@@ -68,7 +68,6 @@ class Nclusters:
                     else:
                         print('No links to this cluster', self.haplogroup, 'network.')
 
-
     def mk_txt(self, cluster_p=None):
         if cluster_p is None:
             print('MDKAs of GD-clusters')
@@ -176,6 +175,29 @@ class Nclusters:
             return unknown
 
 # === Basic Cluster Operations
+
+    def search_matches_from_clusters(self, name_p: Match = None) -> list:
+        """
+        Search match from whole network and collect cluster containing that match to a collection.
+        Then filter non common matches away and split them own clusters. Then you have a common cluster.
+        Prepare links to pointing to it. This is maybe a complicated process.
+
+        :return: list
+        """
+        if name_p is None:
+            return None
+
+        tmp_integrated = []
+        cind = 0
+        for c in self.nclusters:
+            for m in c.matches:
+                if m.Fullname == name_p:
+                    tmp_integrated.append(cind)
+            cind += 1
+        return tmp_integrated
+
+
+
 
     def add_kit(self, kit_p):
         # First we create a tuple where is node name and then list of persons (oldest mother line mother)
