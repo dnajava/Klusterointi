@@ -32,10 +32,9 @@ class Kit:
     def read_kit_clusters(self, kit_id_p: str, pname_p: str, fname_p: str):
         """
         Read matches of kit grouped by GD.
-        :param kit_id_p: str:
-        :param pname_p: str:
-        :param fname_p: str:
-        :return: list:
+        :param kit_id_p: str:   Kit id
+        :param pname_p: str:    Name of kit owner
+        :param fname_p: str:    File name of kit matches
         """
         try:
             with open(fname_p, 'r') as read_obj:
@@ -43,7 +42,8 @@ class Kit:
                 csv_reader = reader(read_obj)
                 for m in csv_reader:
                     if ind == 0:
-                        bogus_match = FileMatch(kit_id_p, 0, pname_p, '', '', '', '', '')  # We know full name of kit owner
+                        # We know now (at this time) only full name of kit owner
+                        bogus_match = FileMatch(kit_id_p, 0, pname_p, '', '', '', '', '')
                         self.gds.add(0, bogus_match)
                         ind += 1
                         continue
@@ -61,8 +61,9 @@ class Kit:
     @staticmethod
     def read_kits(fname_p='') -> list:
         """
-        :type fname_p: str
-        :return: list
+        Reads kits from file.
+        :type fname_p: str  File name of kits list
+        :return: list       List of kits containing kit id, name of owner and date of matchlist file
         """
         tempkits = []
         filename = KITSFILE
