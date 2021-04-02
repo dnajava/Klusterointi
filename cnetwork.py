@@ -5,8 +5,9 @@ Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to autho
 """
 from mtsettings import GDMAX
 from mtsettings import HAPLOGROUP
-from links import Link
+from link import Link
 from clusters import Match
+from clusters import NetCluster
 import json
 # import pyexcel_ods3
 # from pyexel_io import save_data
@@ -23,22 +24,14 @@ class Nclusters:
         """
         self.ind = 0
         self.haplogroup = haplogroup_p
-        self.links = []                             # Links between two clusters GD 1 - 3
 
     # === Show or output clusters
 
-    def show_links(self, debug=False):
-        for v in self.links:
-            if debug:
-                print('nclusters show_link: v=', v)
-            else:
-                print(v)
-
     def show_cluster_matches(self, i=0):
-        for match in self.nclusters[i]:
+        for match in self.nclusters[i].matches:
             match.show()
 
-    def show(self, wide: bool = False, extra_wide: bool = False):
+    def show(self, wide: bool = False, extra_wide: bool = False, links_p: bool = False):
         if self.nclusters is None:
             print('Cluster network is empty.')
             pass
@@ -50,18 +43,31 @@ class Nclusters:
                     print('Cluster ', i, end=''),
                 else:
                     print('Cluster', i, end=''),
-                print(' has', len(a), 'matches.')
+                print(' has', len(a.matches), 'matches.')
 
-                if extra_wide:
-                    self.show_cluster_matches(i)
-                    print()
+                if wide:
+                    for b in a.matches:
+                        b.show()
+
                 i += 1
 
-            if len(self.links) > 0:
-                print('Cluster links in', self.haplogroup, ':')
-                self.show_links()
-            else:
-                print('No links between clusters in', self.haplogroup, 'network.')
+                if links_p:
+                    if len(a.linksfrom) > 0:
+                        print('Cluster links from', self.haplogroup, ':')
+                        for li in a.linksfrom:
+                            li.show()
+                        # self.show_links()
+                    else:
+                        print('No links from this cluster', self.haplogroup, 'network.')
+
+                    if len(a.linksto) > 0:
+                        print('Cluster links to', self.haplogroup, ':')
+                        for li in a.linksto:
+                            li.show()
+                        # self.show_links()
+                    else:
+                        print('No links to this cluster', self.haplogroup, 'network.')
+
 
     def mk_txt(self, cluster_p=None):
         if cluster_p is None:
@@ -175,8 +181,12 @@ class Nclusters:
         # First we create a tuple where is node name and then list of persons (oldest mother line mother)
         if self.nclusters is None:
             self.nclusters = []
+
         for g in kit_p.gds:
-            self.nclusters.append(g)
+            nc = NetCluster('Noname')
+            for m in g:
+                nc.add_match(m)
+            self.nclusters.append(nc)                    # Modify KitClusters to NetClusters and add to list
 
     @staticmethod
     def is_equal_cluster(list_p1, list_p2):
@@ -212,6 +222,25 @@ class Nclusters:
                 return False
         # print('Yes, match is same.')
         return True
+
+    def prepare_clusters(self):
+        """
+        Fill the kit owners bogus match. And add links to NetClusters grouped by KitClusters 0 - 3.
+        :return:
+        """
+        i = 0
+        for c in self.nclusters:
+            if i % 4 == 0:  # Is that kit cluster 0 ?
+                # print('Prepare cluster', i)
+                self.add_first_kit_cluster_data(i)                  # Add kit owners bogus match full of data
+                for j in range(1, 3):                               # Add doublelinks to kit gd clusters 0 - 3.
+                    lif = Link(c, self.nclusters[i + j], j)
+                    lit = Link(self.nclusters[i + j], c, j)
+                    c.linksfrom.append(lif)   # self.nclusters[i]
+                    c.linksto.append(lit)
+                    self.nclusters[i + j].linksfrom.append(lit)
+                    self.nclusters[i + j].linksto.append(lif)
+            i += 1
 
     @staticmethod
     def is_same_cluster(clu1_p, clu2_p):
@@ -360,14 +389,18 @@ class Nclusters:
                     return True
         return False
 
-    @staticmethod
-    def add_first_kit_cluster_data(nclus_p, ind_p) -> bool:
+#    @staticmethod
+    def add_first_kit_cluster_data(self, ind_p) -> bool:
         """
         Searches and copies kit owner data from some match of network. Why? Read documents.
         :return: bool Did the kit owner match get all fields from some other match?
         """
+        if self.nclusters is None:
+            return False
+
         # FIXME: Network has 4 empty kit clusters. How is kit owners names and other data?
-        if not 0 <= ind_p < len(nclus_p):
+
+        if not 0 <= ind_p < len(self.nclusters):
             print('Cnetwork add_first_kit_cluster_data: parameter index out of ncluster list.')
             return False
 
@@ -375,24 +408,24 @@ class Nclusters:
             print('Cnetwork add_first_kit_cluster_data: Index', ind_p, 'not kit cluster 0.')
             return False
 
-        search_name = nclus_p[ind_p][0].Fullname            # Kit owner cluster 0 first match is bogus and owner name
-        bogus_match = nclus_p[ind_p].pop(0)                 # Take away and keep bogus match
+        search_name = self.nclusters[ind_p].matches[0].Fullname     # Kit owner cluster 0 first match has kit owner name
+        bogus_match = self.nclusters[ind_p].matches.pop(0)          # Take away and keep bogus match
 
-        for c in nclus_p:
-            if len(c) > 0:
-                for m in c:
-                    if m.Fullname == search_name:
+        # print('Add_first... sname=', search_name, ' bogus=', bogus_match.Fullname)
+        for c in self.nclusters:
+            if len(c.matches) > 0:
+                for m in c.matches:
+                    if m.Fullname == search_name and m.Firstname != '':
                         bogus_match.Firstname = m.Firstname
                         bogus_match.Middlename = m.Middlename
                         bogus_match.Lastname = m.Lastname
                         bogus_match.Email = m.Email
                         bogus_match.MDKA = m.MDKA
                         # bogus_match.Date = m.Date
-
-                        nclus_p[ind_p].insert(0, bogus_match)
+                        self.nclusters[ind_p].matches.insert(0, bogus_match)
                         return True
-            else:
-                print('Cnetwork add_first_kit_cluster_data() Cluster', ind_p, ' is empty.')
+#            else:
+#                print('Cnetwork add_first_kit_cluster_data() Cluster', ind_p, ' is empty.')
         return False
 
     # === Network operations
@@ -414,15 +447,6 @@ class Nclusters:
                     if debug:
                         print('List item', i, 'or', j, 'was None.')
         print('add_gd_links: done.')
-
-    def add_link(self, clu1_p, clu2_p, dist_p):
-
-        tmp_link = Link(clu1_p, clu2_p, dist_p)
-        self.links.append(tmp_link)
-
-    #    if clu2_p not in clu1_p.links[0]:                               # Is there already a link
-    #        clu1_p.links.append(tuple(clu2_p, dist_p))
-    #        clu2_p.links.add(tuple(clu1_p, dist_p))
 
     # === Output Clusters to other format
 
@@ -538,19 +562,3 @@ def compare_cluster_pair(clu1_p, clu2_p):
     if clu1_p is not clu2_p:
         pass  # nonsense if, because no error messages
     return False
-
-
-def him_not_empty(m_p: Match) -> bool:
-    notempty = False
-#    print('him_not_empty type(m_p)=', type(m_p))
-#    m_p.show()
-#    for i in range(1, 7):
-    if m_p.Firstname != '' or m_p.Email != '':
-        notempty = True
-    return notempty
-
-def show_him(m_p: tuple):
-    print('Him:', end=''),
-    for i in range(1, 7):
-        print(m_p[1][i], 'x', end=''),
-    print()
