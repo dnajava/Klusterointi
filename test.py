@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     """
     Now network of clusters has match clusters from every kit and every GD. And there are double linked gd's
-    between clusters. So next we can
+    between clusters. But not tested yet. So next we can
     - search same matches containing clusters and mark them same cluster.
     - split clusters. How about first collect all same matches containing clusters to collection and then split?
     - delete duplicate clusters. Is this wise to do when we have links between clusters depending on kits?
