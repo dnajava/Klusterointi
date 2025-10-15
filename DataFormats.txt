@@ -3,8 +3,17 @@ DATA FORMATS
 
 Warning: Formats of FTDNA has changed since year 2018.
 
-Matchlist format
-----------------
+Matchlist format 2025
+---------------------
+
+'Full Name', 1 'First Name', 2 'Middle Name', 3 'Last Name', 4 'Match Date',
+5 'Regions Tested', 6 'Genetic Distance', 7 'mtDNA Haplogroup', 8 'Mitotree Haplogroup',
+9 'Haplotype', 10 'Maternal Country of Origin', 11 'Maternal Earliest Known Ancestor',
+12 'Linked Relationship', 13 'Has Family Tree', 14 'Notes'
+
+
+Matchlist old format 2018
+-------------------------
 
     Field description of match
 
