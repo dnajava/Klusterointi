@@ -1,6 +1,8 @@
 DATA FORMATS
 ============
 
+Warning: Formats of FTDNA has changed since year 2018.
+
 Matchlist format
 ----------------
 
