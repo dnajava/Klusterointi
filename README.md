@@ -12,6 +12,8 @@ If you think you know better methods to do something, feel free to contact and t
 Input to this program are downloaded mt-dna match lists from FTDNA. Output are nodes.csv and links.csv. With Gephi
 you can do beautiful graphs of GD network. You can also print MDKA:s as txt and xml file and a spreadsheet.
 
+Graphical GUI added October 2025. It works in my Kubuntu KDE 25.04 system.
+
 TODO:
 
 - Split the cluster, if it contains matches which have other matches than common matches in that cluster.
