@@ -94,9 +94,9 @@ class Nclusters:
                 print(f" has {len(a)} matches.")
 
                 if wide:
-                    for b in a.matches:
-                        b.show()
-
+                    # print(a)
+                    for b in a:
+                        print(f"{b[1]} ", end="")     # Full name
                 i += 1
 
                 if links_p:
