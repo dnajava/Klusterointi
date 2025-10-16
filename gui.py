@@ -39,9 +39,7 @@ class Worker(QObject):
         fname = HAPLOGROUP + '.json'
         if os.path.isfile(fname):
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto löytyi.")
-
-            # print(f"fname={fname}")
-            self.n = Nclusters.read(HAPLOGROUP)
+            self.n = Nclusters.load_from_json(HAPLOGROUP+".json") # Chat GPT aided bugfix
             # TODO: Check if there are new match lists which are not in network
             self.n.show()
             self.progress.emit("Valmis klusteriverkosto ladattu.")
