@@ -26,8 +26,7 @@ class Nclusters:
         Constructs cluster network.
         :param haplogroup_p:
         """
-        self.nclusters = None
-        self.clusters = None
+        self.nclusters, self.clusters = None, None
         self.haplo = Haplo(haplogroup_p)
 
     ''' === File operations '''
@@ -43,8 +42,7 @@ class Nclusters:
         if not hasattr(self, "__dict__"):
             raise TypeError("load_from_json tuli kutsutuksi väärin: 'self' ei ole luokka-instanssi.")
 
-        # avaa tiedosto ja lue JSON
-        with open(filename, "r", encoding="utf-8") as f:
+        with open(filename, "r", encoding=FENCODING) as f:    # avaa tiedosto ja lue JSON
             data = json.load(f)
 
         # Esimerkki: jos JSON sisältää sanakirjan, jossa on nclusters-avaimenä
@@ -52,8 +50,7 @@ class Nclusters:
         if isinstance(data, dict) and "nclusters" in data:
             self.nclusters = data["nclusters"]
         else:
-            # jos JSON on pelkkä luku tai lista, tallennetaan sellaisenaan
-            self.nclusters = data
+            self.nclusters = data   # jos JSON on pelkkä luku tai lista, tallennetaan sellaisenaan
 
         # mahdollinen lisäkäsittely klustereille
         if isinstance(data, dict) and "clusters" in data:
@@ -68,7 +65,7 @@ class Nclusters:
         # U{https://stackoverflow.com/questions/27745500/how-to-save-a-list-to-a-file-and-read-it-as-a-list-type}
         '''
 
-        with open(fname_p, 'w') as f:
+        with open(fname_p, 'w', encoding=FENCODING) as f:
             # indent=2 is not needed but makes the file human-readable
             json.dump(self.nclusters, f, indent=2)
 
