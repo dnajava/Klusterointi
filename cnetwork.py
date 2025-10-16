@@ -62,18 +62,6 @@ class Nclusters:
         # (Lisää tarvittaessa muut kentät kuten reunat yms. täältä)
 
 
-    def read(self, fname_p=HAPLOGROUP + ".json"):
-        ''' Read mt-dna json file '''
-        try:
-            f = open(fname_p, 'r', encoding=FENCODING)
-            self.nclusters = json.load(f)
-        except (IOError, OSError) as err:
-            print(f"Error reading {fname_p}: {err}")
-        finally:
-            if f is not None:
-                f.close()
-
-
     def write(self, fname_p='mt-dna.json'):
         ''' Write json file
         Use Json to save network
@@ -102,11 +90,8 @@ class Nclusters:
             print(f"Net clusters of {self.haplo.haplogroup} :")
             i = 0
             for a in self.nclusters:
-                if i < 10:
-                    print('Cluster ', i, end='')
-                else:
-                    print('Cluster', i, end='')
-                print(f" has {len(a.matches)} matches.")
+                print(f'Cluster{" " if i < 10 else ""}', i, end='')
+                print(f" has {len(a)} matches.")
 
                 if wide:
                     for b in a.matches:
