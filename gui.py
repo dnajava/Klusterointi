@@ -25,7 +25,13 @@ class Worker(QObject):
     n: list
     def __init__(self, n_clusters_instance):
         super().__init__()
-        self.n = Nclusters()    # Create empty network of clusters
+        # Käytä annettua Nclusters-instanssia jos sellainen oli annettu,
+        # muuten luodaan uusi oletusinstanssi.
+        if n_clusters_instance is None:
+            self.n = Nclusters()
+        else:
+            self.n = n_clusters_instance
+
 
     def make_cluster_network(self):
         ''' Make Cluster network '''
@@ -39,7 +45,7 @@ class Worker(QObject):
         fname = HAPLOGROUP + '.json'
         if os.path.isfile(fname):
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto löytyi.")
-            self.n = Nclusters.load_from_json(HAPLOGROUP+".json") # Chat GPT aided bugfix
+            self.n.load_from_json(fname) # Chat GPT aided bugfix
             # TODO: Check if there are new match lists which are not in network
             self.n.show()
             self.progress.emit("Valmis klusteriverkosto ladattu.")
