@@ -5,6 +5,7 @@ Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to autho
 # import pyexcel_ods3 # from pyexel_io import save_data # import copy
 
 import json
+from typing import Any
 from mtsettings import GDMAX, HAPLOGROUP, FENCODING
 from link import Link
 from clusters import Match, NetCluster
@@ -17,6 +18,7 @@ class Nclusters:
     '''
 
     nclusters: list
+    clusters: list
     haplo: Haplo
 
     def __init__(self, haplogroup_p=HAPLOGROUP):
@@ -25,9 +27,40 @@ class Nclusters:
         :param haplogroup_p:
         """
         self.nclusters = None
+        self.clusters = None
         self.haplo = Haplo(haplogroup_p)
 
     ''' === File operations '''
+
+    def load_from_json(self, filename: str) -> None:
+        """
+        Lataa verkko- / klusteritiedot JSON-tiedostosta.
+        Varmistaa että kutsuja on instanssi (self) eikä merkkijono tms.
+        """
+        # turvatarkistus: jos joku on erehdyksessä antanut selfiksi merkkijonon,
+        # annetaan selkeä virheilmoitus sen sijaan, että saataisiin
+        # 'str' object has no attribute 'nclusters'
+        if not hasattr(self, "__dict__"):
+            raise TypeError("load_from_json tuli kutsutuksi väärin: 'self' ei ole luokka-instanssi.")
+
+        # avaa tiedosto ja lue JSON
+        with open(filename, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        # Esimerkki: jos JSON sisältää sanakirjan, jossa on nclusters-avaimenä
+        # joko luku tai jotain muuta käyttäjän odotuksien mukaisesti
+        if isinstance(data, dict) and "nclusters" in data:
+            self.nclusters = data["nclusters"]
+        else:
+            # jos JSON on pelkkä luku tai lista, tallennetaan sellaisenaan
+            self.nclusters = data
+
+        # mahdollinen lisäkäsittely klustereille
+        if isinstance(data, dict) and "clusters" in data:
+            self.clusters = data["clusters"]
+
+        # (Lisää tarvittaessa muut kentät kuten reunat yms. täältä)
+
 
     def read(self, fname_p=HAPLOGROUP + ".json"):
         ''' Read mt-dna json file '''
