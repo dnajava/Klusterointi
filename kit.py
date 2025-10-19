@@ -41,11 +41,9 @@ class Kit:
         (Genetic Distance) perusteella.
         """
         try:
-            # Yritä lukea tiedosto UTF-8-koodauksella
             df = pd.read_csv(self.file, delimiter=',', skipinitialspace=True, encoding=FENCODING)
         except UnicodeDecodeError:
             try:
-                # Jos UTF-8 epäonnistuu, yritä latin-1 -koodausta
                 df = pd.read_csv(self.file, delimiter=',', skipinitialspace=True, encoding='latin-1')
             except Exception as e:
                 print(f"Virhe luettaessa tiedostoa (latin-1): {e}")
