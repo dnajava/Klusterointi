@@ -5,10 +5,7 @@ Tämä tarkoittaa, että koodi toimii, vaikka CSV-tiedostoon lisättäisiin sara
 '''
 
 import pandas as pd
-
-import re
-from mtsettings import DLDIR, KITSFILE, HAPLOGROUP, FENCODING
-from match import FileMatch, Match
+from mtsettings import DLDIR, HAPLOGROUP, FENCODING
 from gds import Gds
 
 
@@ -45,7 +42,7 @@ class Kit:
         """
         try:
             # Yritä lukea tiedosto UTF-8-koodauksella
-            df = pd.read_csv(self.file, delimiter=',', skipinitialspace=True, encoding='utf-8')
+            df = pd.read_csv(self.file, delimiter=',', skipinitialspace=True, encoding=FENCODING)
         except UnicodeDecodeError:
             try:
                 # Jos UTF-8 epäonnistuu, yritä latin-1 -koodausta
