@@ -1,187 +1,125 @@
-"""
-Kit contains kit id and name of tested person and match list date
-Maybe some day the parameters are in csv-file
-"""
+'''
+Päivitetty osumien lukumetodi on huomattavasti vankempi, sillä se etsii sarakkeet niiden nimien
+(Full Name ja Genetic Distance) perusteella, eikä oletettujen sarakeindeksien (kuten row[0] ja row[6]) mukaan.
+Tämä tarkoittaa, että koodi toimii, vaikka CSV-tiedostoon lisättäisiin sarakkeita tai niiden järjestystä muutettaisiin.
+'''
 
-import os
+import pandas as pd
+
 import re
-from csv import reader
 from mtsettings import DLDIR, KITSFILE, HAPLOGROUP, FENCODING
 from match import FileMatch, Match
 from gds import Gds
 
+
 class Kit:
-    """FTDNA kit and it's match clusters grouped by GD"""
-    def __init__(self, id_p, name_p, day_p, haplogroup_p=None):
+    id: str
+    kit_name: str
+    haplogroup: str
+    file: str
+    gds: Gds
+
+    def __init__(self, id_p: str, name_p: str, day_p: str, haplogroup_p: str=None):
         self.id = id_p
-        self.name = name_p                                          # Kit owner real name
-        self.date = None
+        self.kit_name = name_p
         self.haplogroup = HAPLOGROUP if haplogroup_p is None else haplogroup_p
         self.file = DLDIR + id_p + '_MT_DNA_Matches_' + day_p + '.csv' # Matchlist filename
-        # print("Luettava tiedosto:", self.file)
-        self.gds = Gds()
-        self.read_kit_clusters(self.id, self.name, self.file)       # Read match clusters
+        self.gds = Gds()    # Steps 0 (exact match), 1, 2, 3
+        # self.read_kit_clusters(self.id, self.name, self.file)       # Read match clusters
 
+        # Listat sisältävät edelleen sanakirjoja (dict)
+        self.gd0 = []  # Tasan (Exact Match)
+        self.gd1 = []  # 1 step
+        self.gd2 = []  # 2 steps
+        self.gd3 = []  # 3 steps
 
-    def read_kit(self, kit_id_p: str, fname_p: str): # pname_p: str
+    def show(self):
+        print(f"Kit id={self.id} kit_name={self.kit_name} haplogroup={self.haplogroup} file={self.file}")
+
+    def read(self):
         """
-        Read matches of kit grouped by GD.
-        :param kit_id_p: str:   Kit id
-        :param pname_p: str:    Name of kit owner
-        :param fname_p: str:    File name of kit matches
+        Lukee matchit annetusta tiedostopolusta (file_path) Pandas DataFrameen.
+        Jäsentää jokaisen osuman (rivin) sanakirjaksi ja tallentaa sen
+        oikeaan listaan (gd0, gd1, gd2, gd3) geneettisen etäisyyden
+        (Genetic Distance) perusteella.
         """
         try:
-            with open(fname_p, 'r', encoding=FENCODING) as read_obj:    # Read kit from file
-                ind = 0                                                 # Line of match file
-                csv_reader = reader(read_obj)
-                print("csv_reader=", csv_reader)
-                for m in csv_reader:
-                    if ind == 0:
-                        # We know now (at this time) only full name of kit owner
-                        bogus_match = FileMatch(kit_id_p) # ,"","","", "", "", 0, "")
-                        self.gds.add(0, bogus_match)
-                        ind += 1
-                        continue
-                    # DataFormats.txt     kit       gd         fun   fin   min   lam   email mdka
-                    new_match = FileMatch(kit_id_p, int(m[0]), m[1], m[2], m[3], m[4], m[5], m[6])
-                    self.gds.add(int(m[0]), new_match)
-                    ind += 1
-        except (IOError, OSError) as err:
-            print(err)
-        finally:
-            if read_obj is not None:
-                read_obj.close()
-
-
-
-    def read_kit_clusters(self, kit_id_p: str, pname_p: str, fname_p: str): # pname_p: str
-        """
-        Read matches of kit grouped by GD.
-        :param kit_id_p: str:   Kit id
-        :param pname_p: str:    Name of kit owner
-        :param fname_p: str:    File name of kit matches
-        """
-        print(pname_p, kit_id_p)
-        read_obj = None
-        try:
-            with open(fname_p, 'r', encoding=FENCODING) as read_obj:
-                ind = 0                                               # Line of match file
-                csv_reader = reader(read_obj)
-                for m in csv_reader:
-                    if ind == 0:
-                        # print("Bogus m=***", m, "***")
-                        # bogus_match=FileMatch(kit_id_p, 0, pname_p, "", "", "", "", "")
-                        # self.gds.add(gd_p, bogus_match)
-                        ind += 1
-                        continue
-                    # idx = 0
-                    # for mx in m:
-                    #     print(f' m{idx} {m[idx]}', end='')
-                    #     idx += 1
-
-                    #def __init__(self, fun_p, fin_p="", min_p="", lan_p="",
-                    # mdate_p, gd_p="", haplogroup_p="", mdka_p=""):
-
-                                      # fun_p, mdate, gd, haplogroup, mdka
-                    new_match = Match(m[0], m[4], m[6], HAPLOGROUP, m[11])
-                    print("Filematch:", new_match.name.fullname)
-                    # self.gds.add(m[5], new_match)
-                    ind += 1
-        except (IOError, OSError) as err:
-            print(err)
-        finally:
-            if read_obj is not None:
-                read_obj.close()
-
-    def read_kit_clusters2(self, directory: str, pname_p: str):
-        # elf, kit_id_p: str, pname_p: str, fname_p: str
-        """
-        Read all kit match CSV files in the given directory.
-        Filenames are expected to be in the form: <kit_id>_MT_DNA_Matches_<yyyymmdd>.csv
-
-        :param directory: str:   Directory path containing the CSV files
-        :param pname_p:   str:   Name of kit owner
-        """
-
-        # Regex to capture kit ID and date from filename
-        pattern = re.compile(r'^(?P<kit_id>B\d+)_MT_DNA_Matches_(?P<date>\d{8})\.csv$')
-
-        # Iterate over all files in directory
-        for filename in os.listdir(directory):
-            match = pattern.match(filename)
-            if not match:
-                continue  # Skip files that don't match the expected pattern
-
-            kit_id = match.group('kit_id')
-            file_path = os.path.join(directory, filename)
-
-            print(f"Reading file: {file_path}")
-
-            read_obj = None
+            # Yritä lukea tiedosto UTF-8-koodauksella
+            df = pd.read_csv(self.file, delimiter=',', skipinitialspace=True, encoding='utf-8')
+        except UnicodeDecodeError:
             try:
-                with open(file_path, 'r', encoding='utf-8-sig') as read_obj:
-                    csv_reader = reader(read_obj)
-                    for ind, m in enumerate(csv_reader):
-                        if ind == 0:
-                            # First line — add a bogus match with only the owner name
-                            bogus_match = FileMatch(kit_id, 0, pname_p, '', '', '', '', '')
-                            self.gds.add(0, bogus_match)
-                        else:
-                            # Read actual match line
-                            new_match = FileMatch(
-                                kit_id,
-                                int(m[0]),
-                                m[1], m[2], m[3], m[4], m[5], m[6]
-                            )
-                            self.gds.add(int(m[0]), new_match)
-            except (IOError, OSError) as err:
-                print(f"Error reading {file_path}: {err}")
-            finally:
-                if read_obj is not None:
-                    read_obj.close()
+                # Jos UTF-8 epäonnistuu, yritä latin-1 -koodausta
+                df = pd.read_csv(self.file, delimiter=',', skipinitialspace=True, encoding='latin-1')
+            except Exception as e:
+                print(f"Virhe luettaessa tiedostoa (latin-1): {e}")
+                return
+        except FileNotFoundError:
+            print(f"Virhe: Tiedostoa ei löydy polusta: {self.file}")
+            return
+        except pd.errors.EmptyDataError:
+            print(f"Virhe: CSV-tiedosto on tyhjä: {self.file}")
+            return
+        except Exception as e:
+            print(f"Yleinen virhe luettaessa CSV-tiedostoa: {e}")
+            return
 
-    @staticmethod
-    def read_kitlist(fname_p='') -> list:
-        """
-        Reads kits from file.
-        :type fname_p: str  File name of kits list
-        :return: list       List of kits containing kit id, name of owner and date of matchlist file
-        """
-        tempkits = []
-        filename = KITSFILE         # kits.csv
-
-        if fname_p != '':
-            filename = fname_p
-
+        # --- Datan käsittely ---
+        # Tämä osa on identtinen edellisen version kanssa
         try:
-            with open(filename, 'r', encoding=FENCODING) as read_obj:
-                csv_reader = reader(read_obj)
-                for k in csv_reader:
-                    k[1] = k[1].strip() + ' '  # One space after name like match names have
-                    tempkits.append(k)
-        except (IOError, OSError) as err:
-            print(err)
-            return []
-        finally:
-            if read_obj is not None:
-                read_obj.close()
-        return tempkits
+            df.columns = df.columns.str.strip()
+            name_col = 'Full Name'
+            gd_col = 'Genetic Distance'
 
-    def show(self, show_clusters_p=False, show_matches_p=False): # debug3_p=False
-        ''' Show kit data. '''
-        print(f"##### Kit {self.id} ##### {self.name} #####")  # Show only minimal information:
+            if gd_col not in df.columns:
+                print(f"Virhe: CSV-tiedostosta puuttuu pakollinen sarake '{gd_col}'.")
+                return
 
-        if show_clusters_p is not False:                              # Print kit id and name
-            matches = 0
-            if self.gds is not None:
-                for c in self.gds.gdses:
-                    matches += len(c)
-                print(f"Kit has {matches} matches and kit owner.")    # And how many matches it has
+            # Iteroi DataFramen rivit läpi
+            for index, row in df.iterrows():
 
-                if show_matches_p is not False:    # Print amount of matches by clusters
-                    gd_idx = 0
-                    for gg in self.gds:
-                        print('gd', gd_idx)
-                        for m5 in gg:
-                            m5.show()
-                        gd_idx += 1
+                # Muunna koko rivi sanakirjaksi
+                match_data = row.to_dict()
+
+                # Siivoa sanakirjan arvot
+                cleaned_data = {}
+                for key, value in match_data.items():
+                    if pd.isna(value):
+                        cleaned_data[key] = ""  # Muuta tyhjäksi merkkijonoksi
+                    elif isinstance(value, str):
+                        cleaned_data[key] = value.strip()
+                    else:
+                        cleaned_data[key] = value
+
+                # Hae siivottu GD-arvo lajittelua varten
+                gd_cleaned = cleaned_data.get(gd_col, "")
+
+                # Sijoita koko siivottu sanakirja oikeaan listaan
+                if gd_cleaned == "Exact Match":
+                    self.gd0.append(cleaned_data)
+                elif gd_cleaned == "1 step":
+                    self.gd1.append(cleaned_data)
+                elif gd_cleaned == "2 steps":
+                    self.gd2.append(cleaned_data)
+                elif gd_cleaned == "3 steps":
+                    self.gd3.append(cleaned_data)
+
+        except Exception as e:
+            print(f"Virhe käsiteltäessä CSV-dataa Pandasilla: {e}")
+
+    def has_match(self, name: str):
+        """
+        Tarkistaa, löytyykö annettua nimeä (Full Name) mistään GD-listasta.
+        """
+        search_name = name.strip()
+
+        for gd_list in [self.gd0, self.gd1, self.gd2, self.gd3]:
+            for match_data in gd_list:
+                if match_data.get('Full Name') == search_name:
+                    return True
+        return False
+
+    def __str__(self):
+        """
+        Palauttaa merkkijonoesityksen kitistä ja osumien määristä.
+        """
+        return "%s: %s, %s, %s, %s" % (self.kit_name, len(self.gd0), len(self.gd1), len(self.gd2), len(self.gd3))
