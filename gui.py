@@ -50,41 +50,38 @@ class Worker(QObject):
         else:
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmista klusteriverkostoa ei ollut.")
 
-            with open(KITSFILE, newline='') as f:
-                reader = csv.reader(f)
-                data = [tuple(row) for row in reader]
+        with open(KITSFILE, newline='') as f:
+            reader = csv.reader(f)
+            data = [tuple(row) for row in reader]
 
-            found, notfound = "", ""
+        found, notfound = "", ""
 
-            for i, row in enumerate(data): # for i in len(data):
-                k = Kit(data[i][0], data[i][1], data[i][2])
-                self.kits.append(k)
-                if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
-                    found += f' {k[0]}'
-                    k.read_matches()                # Käydään kitin osumat läpi ja lisätään 4-tasoiseen osumalistaan.
-                    print(f"Luettiin kitin {i} mätsit.")
-                else:
-                    notfound += f' {k[0]}'
+        for i, row in enumerate(data): # for i in len(data):
+            k = Kit(data[i][0], data[i][1], data[i][2])
+            self.kits.append(k)
+            if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
+                found += f' {k.id}'
+                k.read_matches()                # Käydään kitin osumat läpi ja lisätään 4-tasoiseen osumalistaan.
+                print(f"Luettiin kitin {i} mätsit.")
+            else:
+                notfound += f' {k.id}'
 
-            self.progress.emit(f"Kittien tiedot luettiin.")
+        self.progress.emit(f"Kittien tiedot luettiin.")
 
-            found, notfound = found.strip(), notfound.strip()
+        found, notfound = found.strip(), notfound.strip()
 
-            match len(found.split()):
-                case 0:
-                    match len(notfound.split()):
-                        case 0: self.progress.emit("#Yhtään kittiä ei löytynyt.")
-                        case 1: self.progress.emit(f"Kitin {notfound} osumalistaa ei löytynyt.")
-                        case _: self.progress.emit(f"Kittien {notfound} osumalistoja ei löytynyt.")
-                case 1:
-                    match len(notfound.split()):
-                        case 0: self.progress.emit(f"Luettiin kitin {found} osumalistat.")
-                        case 1: self.progress.emit(f"Luettiin kitin {found} osumalistat. Kitin {notfound} osumalistoja ei löytynyt.")
-                        case _: self.progress.emit(f"Luettiin kitin {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
-                case _: self.progress.emit(f"Luettiin kittien {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
-
-        # if self.n is not None:
-        #     self.n.show()
+        match len(found.split()):
+            case 0:
+                match len(notfound.split()):
+                    case 0: self.progress.emit("#Yhtään kittiä ei löytynyt.")
+                    case 1: self.progress.emit(f"Kitin {notfound} osumalistaa ei löytynyt.")
+                    case _: self.progress.emit(f"Kittien {notfound} osumalistoja ei löytynyt.")
+            case 1:
+                match len(notfound.split()):
+                    case 0: self.progress.emit(f"Luettiin kitin {found} osumalistat.")
+                    case 1: self.progress.emit(f"Luettiin kitin {found} osumalistat. Kitin {notfound} osumalistoja ei löytynyt.")
+                    case _: self.progress.emit(f"Luettiin kitin {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
+            case _: self.progress.emit(f"Luettiin kittien {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
 
         self.progress.emit("Tehdään klustereista verkosto...")
         for k in self.kits:
@@ -107,7 +104,6 @@ class Worker(QObject):
             self.progress.emit(f'Jaettiin {sint} klusteria.')
 
         self.progress.emit("Valmis! Voit nyt suorittaa toimintoja.")
-
 
         self.n.write(OUTPUTDIR + HAPLOGROUP + '.json')   # Lopuksi talletetaan oleamssa oleva klusteriverkosto
 
