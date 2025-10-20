@@ -2,10 +2,18 @@
 Network of clusters.
 Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to author.
 '''
+from tkinter import dialog
+
 # import pyexcel_ods3 # from pyexel_io import save_data # import copy
 
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
+                             QPushButton, QTextEdit, QLabel) # , QProgressBar)
+                             # from PyQt6.QtCore import QThread, pyqtSignal, QObject
+
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton, QLabel
+from PyQt6.QtCore import Qt
+
 import json
-from typing import Any
 from mtsettings import GDMAX, HAPLOGROUP, FENCODING
 from link import Link
 from clusters import Match, NetCluster
@@ -76,7 +84,77 @@ class Nclusters:
         for match in self.nclusters[i].matches:
             match.show()
 
-    def show(self, wide: bool = False, extra_wide: bool = False, links_p: bool = False):
+    def show(self):
+        """Avaa uuden ikkunan ja näyttää klusterit tekstimuodossa."""
+        dialog = QDialog()
+        dialog.setWindowTitle("Klusteriverkosto")
+        dialog.setMinimumSize(500, 400)
+
+        layout = QVBoxLayout(dialog)
+
+        label = QLabel("Klusterit:")
+        label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(label)
+
+        text_area = QTextEdit()
+        text_area.setReadOnly(True)
+
+        # Muodostetaan tekstimuotoinen raportti
+        report_lines = []
+        if self.nclusters is None:
+            report_lines.append("Cluster network is empty.", end='')
+            # report_lines.append(f'Cluster{" " if i < 10 else ""}', i, "is empty.", end='')
+            pass
+
+        wide = False
+        for cluster in self.nclusters:
+            i = 0
+            for a in self.nclusters:
+                str = f"Klusteri {i}"
+                report_lines.append(str)        #f'Cluster{" " if i < 10 else ""}', i, end='')
+
+                if wide:
+                    # print(a)
+                    for b in a:
+                        print(f"{b[1]} ", end="")  # Full name
+                i += 1
+
+                '''
+                if links_p:
+                    if len(a.linksfrom) > 0:
+                        print(f"Cluster links from {self.haplogroup} :")
+                        for li in a.linksfrom:
+                            li.show()
+                        # self.show_links()
+                    else:
+                        print('No links from this cluster', self.haplogroup, 'network.')
+
+                    if len(a.linksto) > 0:
+                        print('Cluster links to', self.haplogroup, ':')
+                        for li in a.linksto:
+                            li.show()
+                        # self.show_links()
+                    else:
+                        print(f"No links to this cluster {self.haplogroup} network.")
+                '''
+
+            '''
+            cid = self.nclusters.get("id", "?")
+            members = ", ".join(cluster.get("members", []))
+            report_lines.append(f"Klusteri {cid}: {members}")
+            '''
+        text_area.setText("\n".join(report_lines))
+
+        layout.addWidget(text_area)
+
+        close_button = QPushButton("Sulje")
+        close_button.clicked.connect(dialog.close)
+        layout.addWidget(close_button)
+
+        dialog.exec()  # Näyttää ikkunan modaalisesti
+
+
+    def show2(self, wide: bool = False, extra_wide: bool = False, links_p: bool = False):
         ''' Show cluster network '''
         print("Olemme Nclusterin show-metodissa.")
         if self.nclusters is None:
