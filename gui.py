@@ -61,11 +61,8 @@ class Worker(QObject):
             if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
                 found += f' {k.id}'
                 k.read_matches()                # Käydään kitin osumat läpi ja lisätään 4-tasoiseen osumalistaan.
-                print(f"Luettiin kitin {i} mätsit.")
             else:
                 notfound += f' {k.id}'
-
-        print("Kittilistan pituus on ", len(self.kits))
 
         self.progress.emit(f"Kittien tiedot luettiin.")
 
