@@ -42,10 +42,8 @@ class Nclusters:
         if not hasattr(self, "__dict__"):
             raise TypeError("load_from_json tuli kutsutuksi väärin: 'self' ei ole luokka-instanssi.")
 
-        print("Filename jsonille on", filename)
         with open(filename, "r") as f:    # avaa tiedosto ja lue JSON
             data = json.load(f)
-        print("JSON-tiedosto luettu")
 
         # Esimerkki: jos JSON sisältää sanakirjan, jossa on nclusters-avaimenä
         # joko luku tai jotain muuta käyttäjän odotuksien mukaisesti
