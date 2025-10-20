@@ -33,7 +33,7 @@ class Worker(QObject):
 
     def run(self):
         ''' Käynnistää datan käsittelyn '''
-        '''
+
         fname = HAPLOGROUP + '.json'
         if os.path.isfile(fname):
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto löytyi.")
@@ -43,7 +43,7 @@ class Worker(QObject):
             # TODO: Check if there are new match lists which are not in network
         else:
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmista klusteriverkostoa ei ollut.")
-        '''
+
         data = None
 
         with open(KITSFILE, newline='') as f:
@@ -103,7 +103,7 @@ class Worker(QObject):
 
         self.progress.emit("Valmis! Voit nyt suorittaa toimintoja.")
 
-        # self.n.write(OUTPUTDIR + HAPLOGROUP + '.json')   # Lopuksi talletetaan oleamssa oleva klusteriverkosto
+        # self.n.write(OUTPUTDIR + HAPLOGROUP + ".json")   # Lopuksi talletetaan oleamssa oleva klusteriverkosto
 
         self.finished.emit()
 
@@ -146,6 +146,7 @@ class MainWindow(QMainWindow):
             "Tulosta klusterit": self.n.show, # Sama kuin ensimmäinen
             "Vie klusterit XML/JSON-muotoon": self.n.mk_xml,
             "Näytä MDKA:t": self.n.show_mdkas,
+            "Talleta ja lopeta": self.save_and_exit,
         }
 
         self.button_widgets = []
@@ -164,6 +165,19 @@ class MainWindow(QMainWindow):
         # Käynnistetään datan lataus taustalla
         # self.read_kits()
         self.start_data_processing()
+
+    # def start_data_processing(self):
+    def save_and_exit(self):
+        ''' Save and exit '''
+        if self.n is not None:
+            try:
+                filename = os.path.join(OUTPUTDIR, HAPLOGROUP + '.json')
+                self.n.write(filename)
+                self.log_message(f"Tiedot tallennettu onnistuneesti tiedostoon {filename}.")
+            except Exception as e:
+                self.log_message(f"Virhe tallennuksessa: {e}")
+        self.log_message("Suljetaan ohjelma...")
+        QApplication.instance().quit()
 
     def log_message(self, message):
         """Lisää viestin GUI:n tekstikenttään."""
