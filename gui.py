@@ -13,23 +13,17 @@ from kit import Kit
 from cnetwork import Nclusters
 from mtsettings import KITSFILE, HAPLOGROUP, OUTPUTDIR
 
-
 class Worker(QObject):
-    '''
-    Taustasäie, joka suorittaa aikaa vievän datan käsittelyn.
-    '''
+    ''' Taustasäie, joka suorittaa aikaa vievän datan käsittelyn. '''
+    finished, progress = pyqtSignal(), pyqtSignal(str)
+    n: Nclusters                            # Klusteriverskosto
+    kits: list                              # Kittilista
 
-    finished = pyqtSignal()
-    progress = pyqtSignal(str)
-    n: Nclusters                                    # Klusteriverskosto
-    kits: list
     def __init__(self, n_clusters_instance):
         super().__init__()
-        # Käytä annettua Nclusters-instanssia jos sellainen oli annettu,
-        # muuten luodaan uusi oletusinstanssi.
-        if n_clusters_instance is None:
+        if n_clusters_instance is None:     # Käytä annettua Nclusters-instanssia jos sellainen oli annettu,
             self.n = Nclusters()
-        else:
+        else:                               # muuten luodaan uusi oletusinstanssi.
             self.n = n_clusters_instance
         self.kits = []
 
@@ -39,24 +33,29 @@ class Worker(QObject):
 
     def run(self):
         ''' Käynnistää datan käsittelyn '''
+        '''
         fname = HAPLOGROUP + '.json'
         if os.path.isfile(fname):
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto löytyi.")
-            self.n.load_from_json(fname)
+            # self.n.load_from_json(fname)
             self.progress.emit("Valmis klusteriverkosto ladattu.")
-            # self.n.show(True)
             self.progress.emit("Tarkista, ettei ole uusia osumalistoja olemassaolevan klusteriverkoston lisäksi.")
             # TODO: Check if there are new match lists which are not in network
         else:
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmista klusteriverkostoa ei ollut.")
+        '''
+        data = None
 
         with open(KITSFILE, newline='') as f:
             reader = csv.reader(f)
             data = [tuple(row) for row in reader]
 
+        # print("data tyyppi =", type(data))
+
         found, notfound = "", ""
 
-        for i, row in enumerate(data): # for i in len(data):
+        # for i, row in enumerate(data):
+        for i in range( len(data) ):
             k = Kit(data[i][0], data[i][1], data[i][2])
             self.kits.append(k)
             if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
@@ -65,6 +64,8 @@ class Worker(QObject):
                 print(f"Luettiin kitin {i} mätsit.")
             else:
                 notfound += f' {k.id}'
+
+        print("Kittilistan pituus on ", len(self.kits))
 
         self.progress.emit(f"Kittien tiedot luettiin.")
 
@@ -105,7 +106,7 @@ class Worker(QObject):
 
         self.progress.emit("Valmis! Voit nyt suorittaa toimintoja.")
 
-        self.n.write(OUTPUTDIR + HAPLOGROUP + '.json')   # Lopuksi talletetaan oleamssa oleva klusteriverkosto
+        # self.n.write(OUTPUTDIR + HAPLOGROUP + '.json')   # Lopuksi talletetaan oleamssa oleva klusteriverkosto
 
         self.finished.emit()
 
