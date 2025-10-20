@@ -21,7 +21,7 @@ class Worker(QObject):
 
     finished = pyqtSignal()
     progress = pyqtSignal(str)
-    n: list
+    n: Nclusters                                    # Klusteriverskosto
     kits: list
     def __init__(self, n_clusters_instance):
         super().__init__()
@@ -56,7 +56,7 @@ class Worker(QObject):
 
             found, notfound = "", ""
 
-            for i in len(data):
+            for i, row in enumerate(data): # for i in len(data):
                 k = Kit(data[i][0], data[i][1], data[i][2])
                 self.kits.append(k)
                 if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
