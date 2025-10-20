@@ -42,8 +42,10 @@ class Nclusters:
         if not hasattr(self, "__dict__"):
             raise TypeError("load_from_json tuli kutsutuksi väärin: 'self' ei ole luokka-instanssi.")
 
-        with open(filename, "r", encoding=FENCODING) as f:    # avaa tiedosto ja lue JSON
+        print("Filename jsonille on", filename)
+        with open(filename, "r") as f:    # avaa tiedosto ja lue JSON
             data = json.load(f)
+        print("JSON-tiedosto luettu")
 
         # Esimerkki: jos JSON sisältää sanakirjan, jossa on nclusters-avaimenä
         # joko luku tai jotain muuta käyttäjän odotuksien mukaisesti
@@ -58,17 +60,16 @@ class Nclusters:
 
         # (Lisää tarvittaessa muut kentät kuten reunat yms. täältä)
 
-
     def write(self, fname_p='mt-dna.json'):
         ''' Write json file
         Use Json to save network
         # U{https://stackoverflow.com/questions/27745500/how-to-save-a-list-to-a-file-and-read-it-as-a-list-type}
         '''
 
+        # TODO: Check the JSON file if it saves it correctly
         with open(fname_p, 'w', encoding=FENCODING) as f:
             # indent=2 is not needed but makes the file human-readable
             json.dump(self.nclusters, f, indent=2)
-
 
     # === Show or output clusters
 
@@ -88,7 +89,7 @@ class Nclusters:
             i = 0
             for a in self.nclusters:
                 print(f'Cluster{" " if i < 10 else ""}', i, end='')
-                print(f" has {len(a)} matches.")
+                print(f" has {a} matches.")
 
                 if wide:
                     # print(a)
