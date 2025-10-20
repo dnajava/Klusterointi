@@ -36,11 +36,9 @@ class Worker(QObject):
 
         fname = HAPLOGROUP + '.json'
         if os.path.isfile(fname):
-            self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto löytyi.")
-            # self.n.load_from_json(fname)
-            self.progress.emit("Valmis klusteriverkosto ladattu.")
-            self.progress.emit("Tarkista, ettei ole uusia osumalistoja olemassaolevan klusteriverkoston lisäksi.")
-            # TODO: Check if there are new match lists which are not in network
+            # self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto löytyi.")
+            self.n.load_from_json(fname)
+            self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto ladattu.")
         else:
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmista klusteriverkostoa ei ollut.")
 
@@ -64,8 +62,6 @@ class Worker(QObject):
             else:
                 notfound += f' {k.id}'
 
-        self.progress.emit(f"Kittien tiedot luettiin.")
-
         found, notfound = found.strip(), notfound.strip()
 
         match len(found.split()):
@@ -81,11 +77,11 @@ class Worker(QObject):
                     case _: self.progress.emit(f"Luettiin kitin {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
             case _: self.progress.emit(f"Luettiin kittien {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
 
-        self.progress.emit("Tehdään klustereista verkosto...")
+        self.progress.emit("Tähän asti ohjelma toiminee ok. ***************************")
+
         for k in self.kits:
             self.n.add_kit(k)  # for z in k.gds: self.n.add(z)
-        self.progress.emit("Kittien osumat lisätty klusteriverkostoon.")
-        self.progress.emit("Tähän asti ohjelma toiminee ok. ***************************")
+        self.progress.emit("Kittien mahdolliset lisäosumat lisätty klusteriverkostoon.")
 
         self.progress.emit("Poistetaan duplikaattiklusterit...")
         dint = 0
@@ -112,7 +108,7 @@ class MainWindow(QMainWindow):
     ''' Graafisen käyttöliittymän pääikkuna. Sisältää tekstialueen ja painikkeet toimintoihin '''
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"mtDNA Klusterianalyysi - {HAPLOGROUP}")
+        self.setWindowTitle(f"mtDNA Klusterianalyysi")
         self.setGeometry(100, 100, 600, 500)
 
         self.n = Nclusters()
@@ -123,7 +119,7 @@ class MainWindow(QMainWindow):
         self.layout = QVBoxLayout(self.central_widget)
 
         # Otsikko
-        self.title_label = QLabel(f"Toiminnot haploryhmälle: {HAPLOGROUP}")
+        self.title_label = QLabel(f"Haploryhmä {HAPLOGROUP}")
         font = self.title_label.font()
         font.setPointSize(14)
         font.setBold(True)
