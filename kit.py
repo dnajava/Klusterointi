@@ -7,6 +7,7 @@ Tämä tarkoittaa, että koodi toimii, vaikka CSV-tiedostoon lisättäisiin sara
 import pandas as pd
 from mtsettings import DLDIR, HAPLOGROUP, FENCODING
 from gds import Gds
+import datetime
 
 
 class Kit:
@@ -33,7 +34,7 @@ class Kit:
     def show(self):
         print(f"Kit id={self.id} kit_name={self.kit_name} haplogroup={self.haplogroup} file={self.file}")
 
-    def read(self):
+    def read_matches(self):
         """
         Lukee matchit annetusta tiedostopolusta (file_path) Pandas DataFrameen.
         Jäsentää jokaisen osuman (rivin) sanakirjaksi ja tallentaa sen
