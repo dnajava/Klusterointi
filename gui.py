@@ -3,8 +3,7 @@ Graafinen klusterointityökalun pääohjelma.
 Ilpo Kantonen ilpo@iki.fi. Started spring 2018. AI assisted automn 2025
 '''
 
-import sys
-import os.path
+import sys, csv, os.path
 
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QPushButton, QTextEdit, QLabel) # , QProgressBar
@@ -12,7 +11,7 @@ from PyQt6.QtCore import QThread, pyqtSignal, QObject
 
 from kit import Kit
 from cnetwork import Nclusters
-from mtsettings import DLDIR, HAPLOGROUP, OUTPUTDIR
+from mtsettings import KITSFILE, HAPLOGROUP, OUTPUTDIR
 
 
 class Worker(QObject):
@@ -59,7 +58,7 @@ class Worker(QObject):
 
             for i in len(data):
                 k = Kit(data[i][0], data[i][1], data[i][2])
-                kits.append(k)
+                self.kits.append(k)
                 if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
                     found += f' {k[0]}'
                     k.read_matches()                # Käydään kitin osumat läpi ja lisätään 4-tasoiseen osumalistaan.
@@ -84,7 +83,6 @@ class Worker(QObject):
                         case _: self.progress.emit(f"Luettiin kitin {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
                 case _: self.progress.emit(f"Luettiin kittien {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
 
-        self.progress.emit("Valmis! Voit nyt suorittaa toimintoja.")
         # if self.n is not None:
         #     self.n.show()
 
@@ -94,7 +92,7 @@ class Worker(QObject):
         self.progress.emit("Kittien osumat lisätty klusteriverkostoon.")
         self.progress.emit("Tähän asti ohjelma toiminee ok. ***************************")
 
-        self.progress.emit("Poistetaan duplikaatit...")
+        self.progress.emit("Poistetaan duplikaattiklusterit...")
         dint = 0
         while self.n.delete_duplicates():
             dint += 1
@@ -107,6 +105,9 @@ class Worker(QObject):
             sint += 1
         if sint:
             self.progress.emit(f'Jaettiin {sint} klusteria.')
+
+        self.progress.emit("Valmis! Voit nyt suorittaa toimintoja.")
+
 
         self.n.write(OUTPUTDIR + HAPLOGROUP + '.json')   # Lopuksi talletetaan oleamssa oleva klusteriverkosto
 
