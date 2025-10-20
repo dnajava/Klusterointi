@@ -133,11 +133,9 @@ class MainWindow(QMainWindow):
         # Painikkeet
         self.buttons = {
             "Näytä klusteriverkosto": self.n.show,
-            "Luo tiedostot Gephille / Pyplotille": self.n.gephi,
-            "Tulosta klusterit": self.n.show, # Sama kuin ensimmäinen
-            "Vie klusterit XML/JSON-muotoon": self.n.mk_xml,
             "Näytä MDKA:t": self.n.show_mdkas,
-            "Talleta ja lopeta": self.save_and_exit,
+            "Luo tiedostot Gephille": self.n.gephi,
+            "Vie klusterit XML/JSON-muotoon": self.n.mk_xml,
         }
 
         self.button_widgets = []
@@ -148,7 +146,7 @@ class MainWindow(QMainWindow):
             self.layout.addWidget(button)
             self.button_widgets.append(button)
 
-        self.save_exit_button = QPushButton("Tallenna ja poistu")
+        self.save_exit_button = QPushButton("Talleta ja poistu")
         self.save_exit_button.clicked.connect(self.save_and_exit)
         self.save_exit_button.setEnabled(False)
         self.layout.addWidget(self.save_exit_button)
