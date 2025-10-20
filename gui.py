@@ -23,6 +23,7 @@ class Worker(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str)
     n: list
+    kits: list
     def __init__(self, n_clusters_instance):
         super().__init__()
         # Käytä annettua Nclusters-instanssia jos sellainen oli annettu,
@@ -31,7 +32,7 @@ class Worker(QObject):
             self.n = Nclusters()
         else:
             self.n = n_clusters_instance
-
+        self.kits = []
 
     def make_cluster_network(self):
         ''' Make Cluster network '''
@@ -39,39 +40,34 @@ class Worker(QObject):
 
     def run(self):
         ''' Käynnistää datan käsittelyn '''
-
-        kits = []
-
         fname = HAPLOGROUP + '.json'
         if os.path.isfile(fname):
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmis klusteriverkosto löytyi.")
-            self.n.load_from_json(fname) # Chat GPT aided bugfix
-            # TODO: Check if there are new match lists which are not in network
-            self.n.show()
+            self.n.load_from_json(fname)
             self.progress.emit("Valmis klusteriverkosto ladattu.")
-
-            self.progress.emit("Tarkista, ettei koneella ole uusia osumalistoja olemassaolevan klusteriverkoston lisäksi.")
+            # self.n.show(True)
+            self.progress.emit("Tarkista, ettei ole uusia osumalistoja olemassaolevan klusteriverkoston lisäksi.")
+            # TODO: Check if there are new match lists which are not in network
         else:
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmista klusteriverkostoa ei ollut.")
-            kit_ids_list = Kit.read_kitlist()
+
+            with open(KITSFILE, newline='') as f:
+                reader = csv.reader(f)
+                data = [tuple(row) for row in reader]
+
             found, notfound = "", ""
-            # kits = []
 
-            for k in kit_ids_list:
-                pvm = k[2][0:2] + k[2][2:4] + '-' + k[2][4:6] + '-' + k[2][6:8]
-                fname2 = DLDIR + f'{k[0]}_MT_DNA_Matches_{pvm}.csv'
-
-                if os.path.isfile(fname2):          # Löytyykö kitin osumalistatiedosto?
+            for i in len(data):
+                k = Kit(data[i][0], data[i][1], data[i][2])
+                kits.append(k)
+                if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
                     found += f' {k[0]}'
-                    k = Kit(k[0], k[1], fname2)
-                    kits.append(k)
-                    # Käydään kitin osumat läpi ja lisätään sen kitin 4-tasoiseen osumalistaan gd:n mukaan.
-
-                    # new_match = Match(k[0], k[1], pvm, HAPLOGROUP)
-                    # print("New match = ", new_match.Fullname)
-                    # matches.append(new_match)
+                    k.read_matches()                # Käydään kitin osumat läpi ja lisätään 4-tasoiseen osumalistaan.
+                    print(f"Luettiin kitin {i} mätsit.")
                 else:
                     notfound += f' {k[0]}'
+
+            self.progress.emit(f"Kittien tiedot luettiin.")
 
             found, notfound = found.strip(), notfound.strip()
 
@@ -89,17 +85,14 @@ class Worker(QObject):
                 case _: self.progress.emit(f"Luettiin kittien {found} osumalistat. Kittien {notfound} osumalistoja ei löytynyt.")
 
         self.progress.emit("Valmis! Voit nyt suorittaa toimintoja.")
-        if self.n is None:
-            print("selffi n on None.")
-        else:
-            print("Selffi n ei ole None.")
-            self.n.show()
-        self.n.show()
+        # if self.n is not None:
+        #     self.n.show()
 
         self.progress.emit("Tehdään klustereista verkosto...")
-        for k in kits:
+        for k in self.kits:
             self.n.add_kit(k)  # for z in k.gds: self.n.add(z)
         self.progress.emit("Kittien osumat lisätty klusteriverkostoon.")
+        self.progress.emit("Tähän asti ohjelma toiminee ok. ***************************")
 
         self.progress.emit("Poistetaan duplikaatit...")
         dint = 0
