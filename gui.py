@@ -43,17 +43,12 @@ class Worker(QObject):
             self.progress.emit(f"Haploryhmän {HAPLOGROUP} valmista klusteriverkostoa ei ollut.")
 
         data = None
-
         with open(KITSFILE, newline='') as f:
             reader = csv.reader(f)
             data = [tuple(row) for row in reader]
 
-        # print("data tyyppi =", type(data))
-
         found, notfound = "", ""
-
-        # for i, row in enumerate(data):
-        for i in range( len(data) ):
+        for i, row in enumerate(data):
             k = Kit(data[i][0], data[i][1], data[i][2])
             self.kits.append(k)
             if os.path.isfile(k.file):          # Löytyykö kitin osumalistatiedosto?
