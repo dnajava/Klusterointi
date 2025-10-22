@@ -141,10 +141,6 @@ class Nclusters:
         # https://medium.com/@nazishjaveed164/visualize-hypergraphs-with-python-3a498160f18d
         # Visualize Hypergraphs with Python
 
-
-        # Example hypergraph structure using dictionary
-        # Each key is a hyperedge, and the value is a list of nodes connected by it
-
         if self.nclusters is not None:
             hyperedges = {}
 
@@ -169,7 +165,7 @@ class Nclusters:
         colors = ['red' if B.nodes[n].get('type') == 'hyperedge' else 'skyblue' for n in B.nodes]
 
         # Draw the bipartite graph
-        plt.figure(figsize=(9, 6))
+        plt.figure(figsize=(18, 12))
         nx.draw(B, pos, with_labels=True, node_color=colors, node_size=800, font_weight='bold')
         plt.title("Haploryhmän {HAPLOFROUP} klusteriverkosto")
         plt.show()
