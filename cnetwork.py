@@ -5,6 +5,7 @@ Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to autho
 from tkinter import dialog
 
 import numpy as np
+import networkx as nx
 import matplotlib.pyplot as plt
 
 
@@ -111,15 +112,12 @@ class Nclusters:
         else:
             known, known_mdkas, unknown, unknown_mdkas = 0, 0, 0, 0
             i = 1
-            # if self.nclusters[i] is not None: print("Klusteri ", i)
             for clu in self.nclusters:
-                print("Klusteri ", i, " ")
                 report_lines.append(f"Klusteri {i}")
                 known, unknown = 0, 0
                 if i > 4:
                     break
                 for match in clu:
-                    # print("Match", match)
                     if match[6] == '':
                         unknown_mdkas += 1; unknown += 1
                     else:
@@ -128,9 +126,7 @@ class Nclusters:
                 i = i+1
 
                 if unknown:
-                    print("Tuntemattomia oli tässä klusterissa ", unknown, " esiäitiä.")
                     report_lines.append(f"{MDKATAB}Tässä klusterissa on {unknown} tuntematonta MDKA:ta.")
-
 
             report_lines.append(f"Yhteensä on {known_mdkas} MDKA:ta ja {unknown_mdkas} tuntematonta MDKA:ta.")
 
@@ -142,14 +138,40 @@ class Nclusters:
         dialog.exec()  # Näyttää ikkunan modaalisesti
 
     def show_testing(self):
-        x = np.outer(np.linspace(-2, 2, 10), np.ones(10))
-        y = x.copy().T
-        z = np.cos(x ** 2 + y ** 3)
+        # https://medium.com/@nazishjaveed164/visualize-hypergraphs-with-python-3a498160f18d
+        # Visualize Hypergraphs with Python
 
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        ax.plot_surface(x, y, z, cmap='viridis', edgecolor='green')
-        ax.set_title('Klustereiden verkosto')
+
+        # Example hypergraph structure using dictionary
+        # Each key is a hyperedge, and the value is a list of nodes connected by it
+
+        hyperedges = {
+            'e1': ['A', 'B', 'C'],
+            'e2': ['B', 'D'],
+            'e3': ['C', 'D', 'E'],
+            'e4': ['A', 'E']
+        }
+
+        # Create a bipartite graph: nodes (normal + hyperedges (as special nodes)
+        B = nx.Graph()
+
+        # Add nodes and hyperedges as separate types
+        for edge, nodes in hyperedges.items():
+            B.add_node(edge, type='hyperedge')
+            for node in nodes:
+                B.add_node(node, type='node')
+                B.add_edge(edge, node)
+
+        # Positioning: use bipartite layout
+        pos = nx.spring_layout(B, seed=42)
+
+        # Color map: distinguish between node types
+        colors = ['red' if B.nodes[n].get('type') == 'hyperedge' else 'skyblue' for n in B.nodes]
+
+        # Draw the bipartite graph
+        plt.figure(figsize=(9, 6))
+        nx.draw(B, pos, with_labels=True, node_color=colors, node_size=800, font_weight='bold')
+        plt.title(" Hypergraph Visualization in Python")
         plt.show()
 
         '''
