@@ -131,6 +131,9 @@ class Nclusters:
                     print("Tuntemattomia oli tässä klusterissa ", unknown, " esiäitiä.")
                     report_lines.append(f"{MDKATAB}Tässä klusterissa on {unknown} tuntematonta MDKA:ta.")
 
+
+            report_lines.append(f"Yhteensä on {known_mdkas} MDKA:ta ja {unknown_mdkas} tuntematonta MDKA:ta.")
+
         text_area.setText("\n".join(report_lines))
         layout.addWidget(text_area)
         close_button = QPushButton("Sulje")
