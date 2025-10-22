@@ -145,25 +145,25 @@ class Nclusters:
         # Example hypergraph structure using dictionary
         # Each key is a hyperedge, and the value is a list of nodes connected by it
 
-        hyperedges = {
-            'e1': ['A', 'B', 'C'],
-            'e2': ['B', 'D'],
-            'e3': ['C', 'D', 'E'],
-            'e4': ['A', 'E']
-        }
+        if self.nclusters is not None:
+            hyperedges = {}
 
-        # Create a bipartite graph: nodes (normal + hyperedges (as special nodes)
-        B = nx.Graph()
+            i = 1
+            for clu in self.nclusters:
+                clustername = f"Klusteri {i}"
+                hyperedges[clustername] = '"Klusteri'
+                i += 1
+
+            B = nx.Graph()                              # Create a bipartite graph
 
         # Add nodes and hyperedges as separate types
-        for edge, nodes in hyperedges.items():
+        for edge, nodes in hyperedges.items():         # Add nodes and hyperedges as separate types
             B.add_node(edge, type='hyperedge')
             for node in nodes:
                 B.add_node(node, type='node')
                 B.add_edge(edge, node)
 
-        # Positioning: use bipartite layout
-        pos = nx.spring_layout(B, seed=42)
+        pos = nx.spring_layout(B, seed=42)              # Positioning: use bipartite layout
 
         # Color map: distinguish between node types
         colors = ['red' if B.nodes[n].get('type') == 'hyperedge' else 'skyblue' for n in B.nodes]
@@ -171,49 +171,8 @@ class Nclusters:
         # Draw the bipartite graph
         plt.figure(figsize=(9, 6))
         nx.draw(B, pos, with_labels=True, node_color=colors, node_size=800, font_weight='bold')
-        plt.title(" Hypergraph Visualization in Python")
+        plt.title("Haploryhmän {HAPLOFROUP} klusteriverkosto")
         plt.show()
-
-        '''
-        for cluster in self.nclusters:
-            i, j = 0, 0
-            for a in self.nclusters:
-                if wide:
-                    strl = ""
-                    for b in a:
-                        print(b)
-                        if type(b) != None:
-                            strl += str( b[1] )
-                            j += 1
-                    # strl += f" yhteensä {j} esiäitiä."
-                    report_lines.append(strl)
-
-                i += 1
-
-            strl = f"Klusterissa {i} on {j} esiäitiä."
-            report_lines.append(strl)        #f'Cluster{" " if i < 10 else ""}', i, end='')
-
-            if links_p:
-                if len(a.linksfrom) > 0:
-                    print(f"Cluster links from {self.haplogroup} :")
-                    for li in a.linksfrom:
-                        li.show()
-                    # self.show_links()
-                else:
-                    print('No links from this cluster', self.haplogroup, 'network.')
-
-                if len(a.linksto) > 0:
-                    print('Cluster links to', self.haplogroup, ':')
-                    for li in a.linksto:
-                        li.show()
-                    # self.show_links()
-                else:
-                    print(f"No links to this cluster {self.haplogroup} network.")
-            cid = self.nclusters.get("id", "?")
-            members = ", ".join(cluster.get("members", []))
-            report_lines.append(f"Klusteri {cid}: {members}")
-
-        '''
 
     def mk_txt(self, cluster_p=None):
         ''' make text '''
