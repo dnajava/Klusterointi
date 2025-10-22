@@ -137,7 +137,7 @@ class Nclusters:
         layout.addWidget(close_button)
         dialog.exec()  # Näyttää ikkunan modaalisesti
 
-    def show_testing(self):
+    def show(self):
         # https://medium.com/@nazishjaveed164/visualize-hypergraphs-with-python-3a498160f18d
         # Visualize Hypergraphs with Python
 
