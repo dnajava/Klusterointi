@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
 
         # Painikkeet
         self.buttons = {
-            "Näytä klusteriverkosto":           self.n.show_testing,
+            "Näytä klusteriverkosto":           self.n.show,
             "Näytä MDKA:t":                     self.n.show_mdkas,
             "Luo tiedostot Gephille":           self.n.gephi,
             "Vie klusterit XML/JSON-muotoon":   self.n.mk_xml,
