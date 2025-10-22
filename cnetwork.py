@@ -4,6 +4,10 @@ Copyright Ilpo Kantonen 2021. You may use and modify this program. Tell to autho
 '''
 from tkinter import dialog
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+
 # import pyexcel_ods3 # from pyexel_io import save_data # import copy
 
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
@@ -13,7 +17,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 
-import json
+import json, math
 from mtsettings import GDMAX, HAPLOGROUP, FENCODING
 from link import Link
 from clusters import Match, NetCluster
@@ -84,10 +88,10 @@ class Nclusters:
         for match in self.nclusters[i].matches:
             match.show()
 
-    def show(self):
+    def show_mdkas(self):
         """Avaa uuden ikkunan ja näyttää klusterit tekstimuodossa."""
         dialog = QDialog()
-        dialog.setWindowTitle("Klusteriverkosto")
+        dialog.setWindowTitle("Klusteriverkoston MDKAt")
         dialog.setMinimumSize(500, 400)
 
         layout = QVBoxLayout(dialog)
@@ -101,94 +105,90 @@ class Nclusters:
 
         # Muodostetaan tekstimuotoinen raportti
         report_lines = []
+        MDKATAB = "    "
         if self.nclusters is None:
             report_lines.append("Cluster network is empty.", end='')
-            # report_lines.append(f'Cluster{" " if i < 10 else ""}', i, "is empty.", end='')
-            pass
-
-        wide = False
-        for cluster in self.nclusters:
-            i = 0
-            for a in self.nclusters:
-                str = f"Klusteri {i}"
-                report_lines.append(str)        #f'Cluster{" " if i < 10 else ""}', i, end='')
-
-                if wide:
-                    # print(a)
-                    for b in a:
-                        print(f"{b[1]} ", end="")  # Full name
-                i += 1
-
-                '''
-                if links_p:
-                    if len(a.linksfrom) > 0:
-                        print(f"Cluster links from {self.haplogroup} :")
-                        for li in a.linksfrom:
-                            li.show()
-                        # self.show_links()
+        else:
+            known, known_mdkas, unknown, unknown_mdkas = 0, 0, 0, 0
+            i = 1
+            # if self.nclusters[i] is not None: print("Klusteri ", i)
+            for clu in self.nclusters:
+                print("Klusteri ", i, " ")
+                report_lines.append(f"Klusteri {i}")
+                known, unknown = 0, 0
+                if i > 4:
+                    break
+                for match in clu:
+                    # print("Match", match)
+                    if match[6] == '':
+                        unknown_mdkas += 1; unknown += 1
                     else:
-                        print('No links from this cluster', self.haplogroup, 'network.')
+                        report_lines.append(f"{MDKATAB}{match[6]} ")
+                        known_mdkas += 1; known += 1
+                i = i+1
 
-                    if len(a.linksto) > 0:
-                        print('Cluster links to', self.haplogroup, ':')
-                        for li in a.linksto:
-                            li.show()
-                        # self.show_links()
-                    else:
-                        print(f"No links to this cluster {self.haplogroup} network.")
-                '''
+                if unknown:
+                    print("Tuntemattomia oli tässä klusterissa ", unknown, " esiäitiä.")
+                    report_lines.append(f"{MDKATAB}Tässä klusterissa on {unknown} tuntematonta MDKA:ta.")
 
-            '''
-            cid = self.nclusters.get("id", "?")
-            members = ", ".join(cluster.get("members", []))
-            report_lines.append(f"Klusteri {cid}: {members}")
-            '''
         text_area.setText("\n".join(report_lines))
-
         layout.addWidget(text_area)
-
         close_button = QPushButton("Sulje")
         close_button.clicked.connect(dialog.close)
         layout.addWidget(close_button)
-
         dialog.exec()  # Näyttää ikkunan modaalisesti
 
+    def show_testing(self):
+        x = np.outer(np.linspace(-2, 2, 10), np.ones(10))
+        y = x.copy().T
+        z = np.cos(x ** 2 + y ** 3)
 
-    def show2(self, wide: bool = False, extra_wide: bool = False, links_p: bool = False):
-        ''' Show cluster network '''
-        print("Olemme Nclusterin show-metodissa.")
-        if self.nclusters is None:
-            print('Cluster network is empty.')
-            # pass
-        else:
-            print(f"Net clusters of {self.haplo.haplogroup} :")
-            i = 0
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        ax.plot_surface(x, y, z, cmap='viridis', edgecolor='green')
+        ax.set_title('Klustereiden verkosto')
+        plt.show()
+
+        '''
+        for cluster in self.nclusters:
+            i, j = 0, 0
             for a in self.nclusters:
-                print(f'Cluster{" " if i < 10 else ""}', i, end='')
-                print(f" has {a} matches.")
-
                 if wide:
-                    # print(a)
+                    strl = ""
                     for b in a:
-                        print(f"{b[1]} ", end="")     # Full name
+                        print(b)
+                        if type(b) != None:
+                            strl += str( b[1] )
+                            j += 1
+                    # strl += f" yhteensä {j} esiäitiä."
+                    report_lines.append(strl)
+
                 i += 1
 
-                if links_p:
-                    if len(a.linksfrom) > 0:
-                        print(f"Cluster links from {self.haplogroup} :")
-                        for li in a.linksfrom:
-                            li.show()
-                        # self.show_links()
-                    else:
-                        print('No links from this cluster', self.haplogroup, 'network.')
+            strl = f"Klusterissa {i} on {j} esiäitiä."
+            report_lines.append(strl)        #f'Cluster{" " if i < 10 else ""}', i, end='')
 
-                    if len(a.linksto) > 0:
-                        print('Cluster links to', self.haplogroup, ':')
-                        for li in a.linksto:
-                            li.show()
-                        # self.show_links()
-                    else:
-                        print(f"No links to this cluster {self.haplogroup} network.")
+            if links_p:
+                if len(a.linksfrom) > 0:
+                    print(f"Cluster links from {self.haplogroup} :")
+                    for li in a.linksfrom:
+                        li.show()
+                    # self.show_links()
+                else:
+                    print('No links from this cluster', self.haplogroup, 'network.')
+
+                if len(a.linksto) > 0:
+                    print('Cluster links to', self.haplogroup, ':')
+                    for li in a.linksto:
+                        li.show()
+                    # self.show_links()
+                else:
+                    print(f"No links to this cluster {self.haplogroup} network.")
+            cid = self.nclusters.get("id", "?")
+            members = ", ".join(cluster.get("members", []))
+            report_lines.append(f"Klusteri {cid}: {members}")
+
+        '''
 
     def mk_txt(self, cluster_p=None):
         ''' make text '''
@@ -235,42 +235,6 @@ class Nclusters:
             e_list += em + '; '
         return e_list
 
-    def show_mdkas(self, cluster_p=None):
-        known, unknown = 0, 0
-        i = 0
-        # FIXME: Known and unknown problem. Is that individual match or total all matches?
-
-        if cluster_p is None:
-            for clu in self.nclusters:
-                print('\nCluster', i+1)
-                for match in clu:
-                    if match[6] == '':
-                        unknown += 1
-                    else:
-                        known += 1
-                        print(match[6])
-                if unknown:
-                    if known:
-                        print('And ', end='')
-                    print(unknown, 'unknown MDKAs')
-                i += 1
-
-        else:
-            for clu in self.nclusters:
-                if i == cluster_p:
-                    print('\nCluster', i+1)
-                    for match in clu:
-                        if match[6] == '':
-                            unknown += 1
-                        else:
-                            known += 1
-                            print(match[6])
-                i = i+1
-            if unknown:
-                if known:
-                    print('And ', end='')
-                print(unknown, 'unknown MDKAs')
-
     def amount_unknown_mdkas(self, cluster_p=None):
         # unknown = 0
         i = 0
@@ -293,7 +257,19 @@ class Nclusters:
                 i = i+1
         return unknown
 
+    def gephi(self):
+        pass
+
+    def mk_xml(self):
+        pass
+
     ''' === Basic Cluster Operations '''
+
+    def delete_duplicates(self) -> bool:
+        return False
+
+    def split_clusters(self):
+        pass
 
     def search_matches_from_clusters(self, name_p: Match = None) -> list:
         """
@@ -357,32 +333,32 @@ class Nclusters:
         # print('Yes, match is same.')
         return True
 
-    def prepare_clusters(self):
-        """
-        Fill the kit owners bogus match. And add links to NetClusters grouped by KitClusters 0 - 3.
-        :return:
-        """
-        i = 0
-        for c in self.nclusters:
-            if i % 4 == 0:  # Is that kit cluster 0 ?
-                # print('Prepare cluster', i)
-                self.add_first_kit_cluster_data(i)                  # Add kit owners bogus match full of data
-                for j in range(1, 3):                               # Add doublelinks to kit gd clusters 0 - 3.
-                    lif = Link(c, self.nclusters[i + j], j)
-                    lit = Link(self.nclusters[i + j], c, j)
-                    c.linksfrom.append(lif)   # self.nclusters[i]
-                    c.linksto.append(lit)
-                    self.nclusters[i + j].linksfrom.append(lit)
-                    self.nclusters[i + j].linksto.append(lif)
-            i += 1
+def prepare_clusters(self):
+    """
+    Fill the kit owners bogus match. And add links to NetClusters grouped by KitClusters 0 - 3.
+    :return:
+    """
+    i = 0
+    for c in self.nclusters:
+        if i % 4 == 0:  # Is that kit cluster 0 ?
+            # print('Prepare cluster', i)
+            self.add_first_kit_cluster_data(i)                  # Add kit owners bogus match full of data
+            for j in range(1, 3):                               # Add doublelinks to kit gd clusters 0 - 3.
+                lif = Link(c, self.nclusters[i + j], j)
+                lit = Link(self.nclusters[i + j], c, j)
+                c.linksfrom.append(lif)   # self.nclusters[i]
+                c.linksto.append(lit)
+                self.nclusters[i + j].linksfrom.append(lit)
+                self.nclusters[i + j].linksto.append(lif)
+        i += 1
 
-    @staticmethod
-    def is_same_cluster(clu1_p, clu2_p):
-        ''' Is same cluster '''
-        if clu1_p != clu2_p:
-            return False
+@staticmethod
+def is_same_cluster(clu1_p, clu2_p):
+    ''' Is same cluster '''
+    if clu1_p != clu2_p:
+        return False
 
-        # Both clusters are the same length. Analyze if matches are same as pairs.
+    # Both clusters are the same length. Analyze if matches are same as pairs.
         for _ in range(len(clu1_p)):
             for _ in range(len(clu2_p)):
                 for ix in range(1, 9):                      # First field GD can vary, ignore it
@@ -673,3 +649,4 @@ def compare_cluster_pair(clu1_p, clu2_p):
     if clu1_p is not clu2_p:
         pass  # nonsense if, because no error messages
     return False
+
