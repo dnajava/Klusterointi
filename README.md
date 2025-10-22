@@ -17,5 +17,4 @@ Graphical GUI added October 2025. It works in my Kubuntu KDE 25.04 system.
 TODO:
 
 - Split the cluster, if it contains matches which have other matches than common matches in that cluster.
-- Add GUI to main.
 - Fork to working with y-dna
