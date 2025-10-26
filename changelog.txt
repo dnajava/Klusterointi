@@ -1,3 +1,5 @@
+25 Oct 2025 Multithreading tasks
+20 Oct 2025 Reading matchlists of kits with Panda. Matchlists as dictionaries.
  8 Oct 2025 GUI with Google Gemini AI
  1 Apr 2021 Fixed bogus match data insertion
  1 Apr 2021 Fixed and reorganised Kit, Gds and Cnetwork.
